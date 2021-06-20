@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc && node dist/index.js",
     "start": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts"
+    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
+    "clean:logs": "rm -rf logs/*.log"
   },
   "devDependencies": {
     "@types/node": "^15.12.4",
@@ -17,9 +18,12 @@
   },
   "dependencies": {
     "apollo-server-express": "^2.25.1",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "graphql": "^15.5.0",
+    "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
-    "type-graphql": "^1.1.1"
+    "type-graphql": "^1.1.1",
+    "typeorm": "^0.2.34"
   }
 }
