@@ -6,4 +6,10 @@ yarn-debug.log
 yarn-error.log
 
 # Dependencies
-node_modules
+node_modules/
+
+postgres_db
+
+dist/
+
+.DS_Store
