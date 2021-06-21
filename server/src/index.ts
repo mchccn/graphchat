@@ -1,12 +1,11 @@
-import { ApolloServer } from "apollo-server-express";
-import "dotenv/config";
-import express from "express";
 import "reflect-metadata";
+import "dotenv/config";
+import { ApolloServer } from "apollo-server-express";
+import express from "express";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import { UserResolver } from "./resolvers/UserResolver";
-import { QueryLogger } from "./utils/QueryLogger";
 
 (async () => {
   await createConnection({
@@ -14,7 +13,7 @@ import { QueryLogger } from "./utils/QueryLogger";
     url: process.env.DB_URL,
     entities: [User],
     synchronize: true,
-    logger: QueryLogger.create(),
+    logging: true,
   });
 
   const app = express();
