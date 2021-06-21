@@ -10,6 +10,7 @@
     "clean:logs": "rm -rf logs/*.log"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
     "@types/crypto-js": "^4.0.1",
     "@types/jsonwebtoken": "^8.5.2",
     "@types/node": "^15.12.4",
@@ -23,6 +24,7 @@
   "dependencies": {
     "@aeroware/logger": "^3.0.0",
     "apollo-server-express": "^2.25.1",
+    "cookie-parser": "^1.4.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

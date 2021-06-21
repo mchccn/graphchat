@@ -1,4 +1,5 @@
 import { ApolloServer } from "apollo-server-express";
+import cookies from "cookie-parser";
 import "dotenv/config";
 import express from "express";
 import "reflect-metadata";
@@ -28,13 +29,19 @@ import { QueryLogger } from "./utils/QueryLogger";
 
   logger.info("Connected to database!");
 
-  const app = express().use(root);
+  const app = express().use(
+    express.json(),
+    express.urlencoded({ extended: true }),
+    cookies(),
+    root
+  );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver],
       validate: false,
     }),
+    context: (ctx) => ctx,
   });
 
   apolloServer.applyMiddleware({ app });
