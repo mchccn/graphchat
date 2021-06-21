@@ -11,6 +11,7 @@ import { createConnection } from "typeorm";
 import { __milliseconds__, __prod__ } from "./constants";
 import { User } from "./entities/User";
 import { UserBan } from "./entities/UserBan";
+import { UserBanResolver } from "./resolvers/UserBanResolver";
 import { UserResolver } from "./resolvers/UserResolver";
 import root from "./routes/root";
 import logger from "./utils/logging";
@@ -18,16 +19,12 @@ import logger from "./utils/logging";
 (async () => {
   const port = process.env.PORT ?? 4000;
 
-  const RedisStore = connect(session);
-
   const client = new RedisClient(
     parseInt(process.env.REDIS_PORT!),
     process.env.REDIS_HOST!
-  );
-
-  client.on("error", (e) => logger.error(`Redis error: ${e}`));
-
-  client.on("connect", () => logger.info("Connected to redis!"));
+  )
+    .on("error", (e) => logger.error(`Redis error: ${e}`))
+    .on("connect", () => logger.info("Connected to redis!"));
 
   const orm = await createConnection({
     type: "postgres",
@@ -53,7 +50,7 @@ import logger from "./utils/logging";
       },
       resave: false,
       saveUninitialized: false,
-      store: new RedisStore({ client, disableTouch: true }),
+      store: new (connect(session))({ client }),
     }),
     express.json(),
     express.urlencoded({ extended: true }),
@@ -63,8 +60,9 @@ import logger from "./utils/logging";
 
   const apollo = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, UserBanResolver],
       validate: false,
+      emitSchemaFile: true,
     }),
     context: (ctx) => ctx,
   });

@@ -1,14 +1,15 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "private": "true",
+  "private": true,
   "scripts": {
     "build": "tsc && node dist/index.js",
     "start": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts --exit-child",
     "clean:logs": "rm -rf logs/*.log"
   },
   "devDependencies": {
+    "@types/common-tags": "^1.8.0",
     "@types/connect-redis": "^0.0.16",
     "@types/cookie-parser": "^1.4.2",
     "@types/crypto-js": "^4.0.1",
@@ -27,6 +28,8 @@
     "@aeroware/logger": "^3.0.0",
     "apollo-server-express": "^2.25.1",
     "argon2": "^0.28.2",
+    "class-validator": "^0.13.1",
+    "common-tags": "^1.8.0",
     "connect-redis": "^6.0.0",
     "cookie-parser": "^1.4.5",
     "crypto-js": "^4.0.0",

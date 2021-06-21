@@ -3,6 +3,7 @@ import { User } from "src/entities/User";
 import { Context } from "src/types";
 import { queryError } from "src/utils/errors";
 import { uuid } from "src/utils/ids";
+import { io } from "src/utils/users";
 import {
   Arg,
   Ctx,
@@ -11,8 +12,10 @@ import {
   ObjectType,
   Query,
   Resolver,
+  UseMiddleware,
 } from "type-graphql";
 import { QueryError } from "./errors/QueryError";
+import CheckBans from "./guards/banned";
 import { UpdateUserInput } from "./inputs/UpdateUserInput";
 import {
   UsernamePasswordEmailInput,
@@ -31,6 +34,7 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => User, { nullable: true })
+  @UseMiddleware(CheckBans)
   async me(@Ctx() { req }: Context) {
     if (!req.session.user) return null;
 
@@ -96,6 +100,7 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
+  @UseMiddleware(CheckBans)
   async login(
     @Arg("input") { username, password }: UsernamePasswordInput,
     @Ctx() { req }: Context
@@ -141,16 +146,12 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse, { nullable: true })
+  @UseMiddleware(CheckBans)
   async updateUser(
     @Arg("data") data: UpdateUserInput,
     @Ctx() { req }: Context
   ): Promise<UserResponse> {
     try {
-      if (!req.session.user)
-        return {
-          errors: [queryError(401, "unauthorized")],
-        };
-
       const user = await User.findOne({ id: req.session.user });
 
       if (!user)
@@ -173,45 +174,31 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
+  @UseMiddleware(CheckBans)
   async deleteUser(
     @Arg("id") id: string,
     @Ctx() { req }: Context
   ): Promise<UserResponse> {
     try {
-      if (!req.session.user)
-        return {
-          errors: [queryError(401, "unauthorized")],
-        };
+      const moderator = (await User.findOne({ id: req.session.user }))!;
 
-      const moderator = await User.findOne({ id: req.session.user });
-
-      const user = await User.findOne({ id });
+      const user = (await User.findOne({ id }))!;
 
       if (!user)
         return {
           errors: [queryError(400, "user doesn't exist")],
         };
 
-      const roles = [
-        "sysadmin",
-        "administrator",
-        "moderator",
-        "veteran",
-        "user",
-      ];
-
       if (
-        (id !== req.session.user &&
-          !["sysadmin", "administrator", "moderator"].includes(
-            moderator!.role
-          )) ||
-        roles[roles.indexOf(moderator!.role)] <= roles[roles.indexOf(user.role)]
+        id !== req.session.user &&
+        (!["sysadmin", "administrator", "moderator"].includes(moderator.role) ||
+          !io(moderator).isHigherThan(user))
       )
         return {
           errors: [queryError(403, "forbidden")],
         };
 
-      await User.delete({ id });
+      await User.delete(user);
 
       return { user };
     } catch (e) {

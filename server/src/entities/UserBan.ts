@@ -14,13 +14,21 @@ export class UserBan extends BaseEntity {
 
   @Column()
   @Field(() => String)
+  offenderId!: string;
+
+  @Column()
+  @Field(() => String)
   moderator!: string;
+
+  @Column()
+  @Field(() => String)
+  moderatorId!: string;
 
   @Column({ type: "text" })
   @Field(() => String)
   reason!: string;
 
   @Column({ type: "timestamptz" })
-  @Field(() => Date, { nullable: true })
-  expires?: Date;
+  @Field(() => Date)
+  expires!: Date;
 }
