@@ -5,8 +5,7 @@
   "scripts": {
     "build": "tsc && node dist/index.js",
     "start": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
-    "clean:logs": "rm -rf logs/*.log"
+    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^15.12.4",
