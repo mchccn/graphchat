@@ -81,7 +81,6 @@ module.exports = {
       24: "24rem",
       400: "400px",
     },
-
     boxShadow: {
       outlineLg: "0 0 0 4pt var(--color-primary-800)",
       outlineMd: "0 0 0 2pt var(--color-primary-800)",
@@ -95,8 +94,10 @@ module.exports = {
     },
     extend: {
       borderRadius: {
+        2: "2px",
         5: "5px",
         8: "8px",
+        16: "16px",
         20: "20px",
         40: "40px",
       },
