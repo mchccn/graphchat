@@ -11,3 +11,13 @@ export const uuid = (() => {
 
   return () => uuid.next().value;
 })();
+
+export const hex = (() => {
+  const hex = "0123456789abcdef";
+
+  return (length: number) =>
+    new Array(length)
+      .fill("")
+      .map(() => hex[Math.floor(Math.random() * hex.length)])
+      .join("");
+})();

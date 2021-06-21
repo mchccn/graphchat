@@ -1,5 +1,4 @@
 import { User } from "src/entities/User";
-import { uuid } from "src/utils/ids";
 import {
   Arg,
   Field,
@@ -9,7 +8,6 @@ import {
   Resolver,
 } from "type-graphql";
 import { UpdateUserInput } from "./inputs/UpdateUserInput";
-import { UserInput } from "./inputs/UserInput";
 
 @ObjectType()
 class QueryError {
@@ -31,15 +29,6 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
-  @Mutation(() => UserResponse)
-  async createUser(@Arg("data") data: UserInput): Promise<UserResponse> {
-    const id = uuid();
-
-    const user = await User.create({ id, ...data }).save();
-
-    return { user };
-  }
-
   @Query(() => UserResponse)
   async readUser(@Arg("id") id: string): Promise<UserResponse> {
     const user = await User.findOne({ id });
@@ -65,6 +54,8 @@ export class UserResolver {
       };
 
     await User.update({ id }, data);
+
+    await user.reload();
 
     return { user };
   }

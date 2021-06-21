@@ -9,6 +9,7 @@
     "build:server": "concurrently \"yarn workspace server run build\"",
     "dev:server": "concurrently \"yarn workspace server run dev\"",
     "start:server": "concurrently \"yarn workspace server run start\"",
+    "dev:server:nodemon": "concurrently \"yarn workspace server run dev:nodemon\"",
     "clean:logs:server": "concurrently \"yarn workspace server run clean:logs\"",
     "build:web": "concurrently \"yarn workspace web run build\"",
     "dev:web": "concurrently \"yarn workspace web run dev\"",
