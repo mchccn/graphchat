@@ -1,22 +1,23 @@
+import argon2 from "argon2";
 import { User } from "src/entities/User";
+import { Context } from "src/types";
+import { queryError } from "src/utils/errors";
+import { uuid } from "src/utils/ids";
 import {
   Arg,
+  Ctx,
   Field,
   Mutation,
   ObjectType,
   Query,
   Resolver,
 } from "type-graphql";
+import { QueryError } from "./errors/QueryError";
 import { UpdateUserInput } from "./inputs/UpdateUserInput";
-
-@ObjectType()
-class QueryError {
-  @Field(() => Number)
-  status!: number;
-
-  @Field(() => String)
-  message!: string;
-}
+import {
+  UsernamePasswordEmailInput,
+  UsernamePasswordInput,
+} from "./inputs/UsernamePasswordInput";
 
 @ObjectType()
 class UserResponse {
@@ -29,53 +30,186 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
-  @Query(() => UserResponse)
-  async readUser(@Arg("id") id: string): Promise<UserResponse> {
-    const user = await User.findOne({ id });
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req }: Context) {
+    if (!req.session.user) return null;
 
-    return { user };
+    const user = await User.findOne({ id: req.session.user });
+
+    return user;
+  }
+
+  @Mutation(() => UserResponse)
+  async register(
+    @Arg("input") { username, password, email }: UsernamePasswordEmailInput,
+    @Ctx() { req }: Context
+  ): Promise<UserResponse> {
+    try {
+      if (await User.findOne({ where: { username } }))
+        return {
+          errors: [queryError(409, "username is already taken")],
+        };
+
+      if (username.length <= 2) {
+        return {
+          errors: [queryError(400, "username length must be greater than 2")],
+        };
+      }
+
+      if (password.length <= 2) {
+        return {
+          errors: [queryError(400, "password length must be greater than 2")],
+        };
+      }
+
+      const hashed = await argon2.hash(password);
+
+      const user = await User.create({
+        id: uuid(),
+        username,
+        password: hashed,
+        displayName: username,
+        avatar: "some-cool-avatar-url",
+        email,
+      }).save();
+
+      req.session.user = user.id;
+
+      return { user };
+    } catch (e) {
+      console.error(e);
+
+      return {
+        errors: [queryError(500, "internal server error")],
+      };
+    }
+  }
+
+  @Mutation(() => UserResponse)
+  async login(
+    @Arg("input") { username, password }: UsernamePasswordInput,
+    @Ctx() { req }: Context
+  ): Promise<UserResponse> {
+    try {
+      const user = await User.findOne({ where: { username } });
+
+      if (!user)
+        return {
+          errors: [queryError(400, "username doesn't exist")],
+        };
+
+      if (!(await argon2.verify(user.password, password)))
+        return {
+          errors: [queryError(401, "incorrect password")],
+        };
+
+      req.session.user = user.id;
+
+      return { user };
+    } catch (e) {
+      console.error(e);
+
+      return {
+        errors: [queryError(500, "internal server error")],
+      };
+    }
+  }
+
+  @Query(() => UserResponse)
+  async user(@Arg("id") id: string): Promise<UserResponse> {
+    try {
+      const user = await User.findOne({ id });
+
+      return { user };
+    } catch (e) {
+      console.error(e);
+
+      return {
+        errors: [queryError(500, "internal server error")],
+      };
+    }
   }
 
   @Mutation(() => UserResponse, { nullable: true })
   async updateUser(
-    @Arg("id") id: string,
-    @Arg("data") data: UpdateUserInput
+    @Arg("data") data: UpdateUserInput,
+    @Ctx() { req }: Context
   ): Promise<UserResponse> {
-    const user = await User.findOne({ id });
+    try {
+      if (!req.session.user)
+        return {
+          errors: [queryError(401, "unauthorized")],
+        };
 
-    if (!user)
+      const user = await User.findOne({ id: req.session.user });
+
+      if (!user)
+        return {
+          errors: [queryError(400, "user doesn't exist")],
+        };
+
+      await User.update({ id: req.session.user }, data);
+
+      await user.reload();
+
+      return { user };
+    } catch (e) {
+      console.error(e);
+
       return {
-        errors: [
-          {
-            status: 400,
-            message: "user doesn't exist",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
-
-    await User.update({ id }, data);
-
-    await user.reload();
-
-    return { user };
+    }
   }
 
   @Mutation(() => UserResponse)
-  async deleteUser(@Arg("id") id: string): Promise<UserResponse> {
-    const user = await User.findOne({ id });
+  async deleteUser(
+    @Arg("id") id: string,
+    @Ctx() { req }: Context
+  ): Promise<UserResponse> {
+    try {
+      if (!req.session.user)
+        return {
+          errors: [queryError(401, "unauthorized")],
+        };
 
-    if (!user)
+      const moderator = await User.findOne({ id: req.session.user });
+
+      const user = await User.findOne({ id });
+
+      if (!user)
+        return {
+          errors: [queryError(400, "user doesn't exist")],
+        };
+
+      const roles = [
+        "sysadmin",
+        "administrator",
+        "moderator",
+        "veteran",
+        "user",
+      ];
+
+      if (
+        (id !== req.session.user &&
+          !["sysadmin", "administrator", "moderator"].includes(
+            moderator!.role
+          )) ||
+        roles[roles.indexOf(moderator!.role)] <= roles[roles.indexOf(user.role)]
+      )
+        return {
+          errors: [queryError(403, "forbidden")],
+        };
+
+      await User.delete({ id });
+
+      return { user };
+    } catch (e) {
+      console.error(e);
+
       return {
-        errors: [
-          {
-            status: 400,
-            message: "user doesn't exist",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
-
-    await User.delete({ id });
-
-    return { user };
+    }
   }
 }

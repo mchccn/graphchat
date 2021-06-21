@@ -1,5 +1,12 @@
 import { Field, ObjectType, registerEnumType } from "type-graphql";
-import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 export enum UserRole {
   SYSADMIN = "sysadmin",
@@ -18,25 +25,36 @@ export class User extends BaseEntity {
   @Field(() => String)
   id!: string;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ unique: true })
   @Field(() => String)
   username!: string;
 
-  @Column({ type: "text" })
+  @Column({ unique: true })
   @Field(() => String)
-  avatar!: string;
+  email!: string;
 
-  @Column({ type: "varchar", length: 255 })
-  @Field(() => String)
-  githubId!: string;
+  @Column()
+  password!: string;
 
   @Column({ type: "text" })
   @Field(() => String)
   displayName!: string;
 
+  @Column({ type: "text" })
+  @Field(() => String)
+  avatar!: string;
+
   @Column({ type: "text", default: "" })
   @Field(() => String)
   description!: string;
+
+  @Field(() => String)
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @Field(() => String)
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   @Column({ type: "text", default: "" })
   @Field(() => String)
