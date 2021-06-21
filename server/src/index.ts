@@ -34,6 +34,7 @@ import logger from "./utils/logging";
     url: process.env.DB_URL,
     entities: [User, UserBan],
     synchronize: true,
+    logging: !__prod__,
   });
 
   await orm.runMigrations({ transaction: "none" });

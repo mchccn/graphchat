@@ -25,15 +25,15 @@ export class User extends BaseEntity {
   @Field(() => String)
   id!: string;
 
-  @Column({ type: "varchar" })
+  @Column()
   @Field(() => String)
   username!: string;
 
-  @Column({ type: "varchar" })
+  @Column()
   @Field(() => String)
   email!: string;
 
-  @Column({ type: "varchar" })
+  @Column()
   password!: string;
 
   @Column({ type: "text" })

@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import { User } from "src/entities/User";
 import { Context } from "src/types";
+import { queryError } from "src/utils/errors";
 import { uuid } from "src/utils/ids";
 import {
   Arg,
@@ -11,19 +12,12 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
+import { QueryError } from "./errors/QueryError";
 import { UpdateUserInput } from "./inputs/UpdateUserInput";
 import {
   UsernamePasswordEmailInput,
   UsernamePasswordInput,
 } from "./inputs/UsernamePasswordInput";
-@ObjectType()
-class QueryError {
-  @Field(() => Number)
-  status!: number;
-
-  @Field(() => String)
-  message!: string;
-}
 
 @ObjectType()
 class UserResponse {
@@ -53,33 +47,18 @@ export class UserResolver {
     try {
       if (await User.findOne({ where: { username } }))
         return {
-          errors: [
-            {
-              status: 409,
-              message: "username is already taken",
-            },
-          ],
+          errors: [queryError(409, "username is already taken")],
         };
 
       if (username.length <= 2) {
         return {
-          errors: [
-            {
-              status: 400,
-              message: "username length must be greater than 2",
-            },
-          ],
+          errors: [queryError(400, "username length must be greater than 2")],
         };
       }
 
       if (password.length <= 2) {
         return {
-          errors: [
-            {
-              status: 400,
-              message: "password length must be greater than 2",
-            },
-          ],
+          errors: [queryError(400, "password length must be greater than 2")],
         };
       }
 
@@ -101,12 +80,7 @@ export class UserResolver {
       console.error(e);
 
       return {
-        errors: [
-          {
-            status: 500,
-            message: "internal server error",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
     }
   }
@@ -121,22 +95,12 @@ export class UserResolver {
 
       if (!user)
         return {
-          errors: [
-            {
-              status: 400,
-              message: "username doesn't exist",
-            },
-          ],
+          errors: [queryError(400, "username doesn't exist")],
         };
 
       if (!(await argon2.verify(user.password, password)))
         return {
-          errors: [
-            {
-              status: 401,
-              message: "incorrect password",
-            },
-          ],
+          errors: [queryError(401, "incorrect password")],
         };
 
       req.session.user = user.id;
@@ -146,12 +110,7 @@ export class UserResolver {
       console.error(e);
 
       return {
-        errors: [
-          {
-            status: 500,
-            message: "internal server error",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
     }
   }
@@ -166,12 +125,7 @@ export class UserResolver {
       console.error(e);
 
       return {
-        errors: [
-          {
-            status: 500,
-            message: "internal server error",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
     }
   }
@@ -184,24 +138,14 @@ export class UserResolver {
     try {
       if (!req.session.user)
         return {
-          errors: [
-            {
-              status: 401,
-              message: "unauthorized",
-            },
-          ],
+          errors: [queryError(401, "unauthorized")],
         };
 
       const user = await User.findOne({ id: req.session.user });
 
       if (!user)
         return {
-          errors: [
-            {
-              status: 400,
-              message: "user doesn't exist",
-            },
-          ],
+          errors: [queryError(400, "user doesn't exist")],
         };
 
       await User.update({ id: req.session.user }, data);
@@ -213,12 +157,7 @@ export class UserResolver {
       console.error(e);
 
       return {
-        errors: [
-          {
-            status: 500,
-            message: "internal server error",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
     }
   }
@@ -231,12 +170,7 @@ export class UserResolver {
     try {
       if (!req.session.user)
         return {
-          errors: [
-            {
-              status: 401,
-              message: "unauthorized",
-            },
-          ],
+          errors: [queryError(401, "unauthorized")],
         };
 
       const moderator = await User.findOne({ id: req.session.user });
@@ -245,12 +179,7 @@ export class UserResolver {
 
       if (!user)
         return {
-          errors: [
-            {
-              status: 400,
-              message: "user doesn't exist",
-            },
-          ],
+          errors: [queryError(400, "user doesn't exist")],
         };
 
       const roles = [
@@ -269,12 +198,7 @@ export class UserResolver {
         roles[roles.indexOf(moderator!.role)] <= roles[roles.indexOf(user.role)]
       )
         return {
-          errors: [
-            {
-              status: 403,
-              message: "forbidden",
-            },
-          ],
+          errors: [queryError(403, "forbidden")],
         };
 
       await User.delete({ id });
@@ -284,12 +208,7 @@ export class UserResolver {
       console.error(e);
 
       return {
-        errors: [
-          {
-            status: 500,
-            message: "internal server error",
-          },
-        ],
+        errors: [queryError(500, "internal server error")],
       };
     }
   }
