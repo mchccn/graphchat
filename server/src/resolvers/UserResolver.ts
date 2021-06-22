@@ -23,12 +23,21 @@ import {
 } from "./inputs/UsernamePasswordInput";
 
 @ObjectType()
-class UserResponse {
+export class UserResponse {
   @Field(() => [QueryError], { nullable: true })
   errors?: QueryError[];
 
   @Field(() => User, { nullable: true })
   user?: User;
+}
+
+@ObjectType()
+export class UsersResponse {
+  @Field(() => [QueryError], { nullable: true })
+  errors?: QueryError[];
+
+  @Field(() => [User], { nullable: true })
+  users?: User[];
 }
 
 @Resolver()
