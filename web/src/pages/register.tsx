@@ -1,8 +1,6 @@
 import React from "react";
 
-export default function Register() {
-  // ! fix this
-
+const Register = () => {
   return (
     <div className="grid place-items-center w-full h-full">
       <div className="flex m-auto flex-col p-6 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
@@ -21,4 +19,6 @@ export default function Register() {
       </div>
     </div>
   );
-}
+};
+
+export default Register;
