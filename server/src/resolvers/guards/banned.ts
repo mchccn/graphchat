@@ -1,6 +1,7 @@
 import { User } from "src/entities/User";
 import { UserBan } from "src/entities/UserBan";
 import { Context } from "src/types";
+import { queryError, wrapErrors } from "src/utils/errors";
 import { NextFn, ResolverData } from "type-graphql";
 
 export default async function CheckBans(
@@ -9,7 +10,7 @@ export default async function CheckBans(
 ) {
   const user = await User.findOne({ id: req.session.user });
 
-  if (!user) throw new Error("unauthorized");
+  if (!user) return wrapErrors(queryError(401, "unauthorized"));
 
   const bans = await UserBan.find({
     where: {
@@ -29,7 +30,7 @@ export default async function CheckBans(
     return true;
   }, false);
 
-  if (banned) throw new Error("user is banned");
+  if (banned) return wrapErrors(queryError(403, "user is banned"));
 
   return next();
 }

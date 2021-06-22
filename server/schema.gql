@@ -8,17 +8,41 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+type DirectMessage {
+  content: String!
+  createdAt: String!
+  id: String!
+  receiver: User!
+  sender: User!
+  updatedAt: String!
+}
+
+type DirectMessageResponse {
+  errors: [QueryError!]
+  message: DirectMessage
+}
+
+type DirectMessagesResponse {
+  errors: [QueryError!]
+  messages: [DirectMessage!]
+}
+
 type Mutation {
   ban(id: String!, length: Float, reason: String!): UserBanResponse!
+  deleteDM(id: String!): DirectMessageResponse!
   deleteUser(id: String!): UserResponse!
+  editBan(case: Float!, data: UserBanEditInput!): UserBanResponse!
+  editDM(content: String!, id: String!): DirectMessageResponse!
   login(input: UsernamePasswordInput!): UserResponse!
   register(input: UsernamePasswordEmailInput!): UserResponse!
+  sendDM(message: String!, receiver: String!): DirectMessageResponse!
   unban(id: String!): UserBansResponse!
   updateUser(data: UpdateUserInput!): UserResponse
 }
 
 type Query {
   fetchBans(id: String!): UserBansResponse!
+  getDMs(sender: String!): DirectMessagesResponse!
   me: User
   user(id: String!): UserResponse!
 }
@@ -49,11 +73,17 @@ type User {
 
 type UserBan {
   case: Int!
+  createdAt: String!
   expires: DateTime!
   moderator: String!
   moderatorId: String!
   offender: String!
   offenderId: String!
+  reason: String!
+}
+
+input UserBanEditInput {
+  expires: DateTime!
   reason: String!
 }
 

@@ -48,14 +48,6 @@ export class User extends BaseEntity {
   @Field(() => String)
   description!: string;
 
-  @Field(() => String)
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @Field(() => String)
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
   @Column({ type: "text", default: "" })
   @Field(() => String)
   status!: string;
@@ -67,4 +59,12 @@ export class User extends BaseEntity {
   })
   @Field(() => UserRole)
   role!: UserRole;
+
+  @CreateDateColumn()
+  @Field(() => String)
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  @Field(() => String)
+  updatedAt!: Date;
 }

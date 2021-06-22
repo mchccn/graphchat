@@ -1,5 +1,11 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity()
 @ObjectType()
@@ -31,4 +37,8 @@ export class UserBan extends BaseEntity {
   @Column({ type: "timestamptz" })
   @Field(() => Date)
   expires!: Date;
+
+  @CreateDateColumn()
+  @Field(() => String)
+  createdAt!: Date;
 }

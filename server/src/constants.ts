@@ -9,5 +9,5 @@ export const __milliseconds__ = {
   WEEK: 604800000,
   MONTH: 2419200000,
   YEAR: 29030400000,
-  NEVER: 9007199254740991,
+  NEVER: 12192768000000,
 } as const;

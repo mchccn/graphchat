@@ -1,7 +1,8 @@
+import { __milliseconds__ } from "src/constants";
 import { User } from "src/entities/User";
 import { UserBan } from "src/entities/UserBan";
 import { Context } from "src/types";
-import { queryError } from "src/utils/errors";
+import { queryError, wrapErrors } from "src/utils/errors";
 import { io } from "src/utils/users";
 import { modlog } from "src/utils/webhooks";
 import {
@@ -15,7 +16,9 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { QueryError } from "./errors/QueryError";
+import AdminPerms from "./guards/admin";
 import CheckBans from "./guards/banned";
+import { UserBanEditInput } from "./inputs/UserBanEditInput";
 
 @ObjectType()
 class UserBanResponse {
@@ -38,7 +41,7 @@ class UserBansResponse {
 @Resolver()
 export class UserBanResolver {
   @Mutation(() => UserBanResponse)
-  @UseMiddleware(CheckBans)
+  @UseMiddleware(CheckBans, AdminPerms)
   async ban(
     @Arg("id") id: string,
     @Arg("reason") reason: string,
@@ -51,9 +54,12 @@ export class UserBanResolver {
       const offender = (await User.findOne({ id }))!;
 
       if (!io(moderator).isHigherThan(offender))
-        return {
-          errors: [queryError(403, "forbidden")],
-        };
+        return wrapErrors(queryError(403, "forbidden"));
+
+      if (!reason) return wrapErrors(queryError(400, "no reason provided"));
+
+      if (length > __milliseconds__.NEVER)
+        return wrapErrors(queryError(400, "ban length too long"));
 
       const ban = await UserBan.create({
         offender: offender.username,
@@ -61,7 +67,7 @@ export class UserBanResolver {
         offenderId: offender.id,
         moderatorId: moderator.id,
         reason,
-        expires: new Date(Date.now() + length),
+        expires: new Date(Date.now() + (length ?? __milliseconds__.NEVER)),
       }).save();
 
       await modlog({
@@ -76,14 +82,51 @@ export class UserBanResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
+    }
+  }
+
+  @Mutation(() => UserBanResponse)
+  @UseMiddleware(CheckBans, AdminPerms)
+  async editBan(
+    @Arg("case") caseNumber: number,
+    @Arg("data") { reason, expires }: UserBanEditInput,
+    @Ctx() { req }: Context
+  ): Promise<UserBanResponse> {
+    try {
+      const moderator = (await User.findOne({ id: req.session.user }))!;
+
+      const ban = await UserBan.findOne({
+        where: {
+          case: caseNumber,
+        },
+      });
+
+      if (!ban) return wrapErrors(queryError(400, "ban doesn't exist"));
+
+      if (
+        ban.moderatorId !== moderator.id ||
+        ban.moderator !== moderator.username
+      )
+        return wrapErrors(queryError(403, "forbidden"));
+
+      if (!reason) return wrapErrors(queryError(400, "no reason provided"));
+
+      ban.reason = reason ?? ban.reason;
+      ban.expires = expires ?? ban.expires;
+
+      await ban.save();
+
+      return { ban };
+    } catch (e) {
+      console.error(e);
+
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 
   @Mutation(() => UserBansResponse)
-  @UseMiddleware(CheckBans)
+  @UseMiddleware(CheckBans, AdminPerms)
   async unban(
     @Arg("id") id: string,
     @Ctx() { req }: Context
@@ -94,9 +137,7 @@ export class UserBanResolver {
       const offender = (await User.findOne({ id }))!;
 
       if (!io(moderator).isHigherThan(offender))
-        return {
-          errors: [queryError(403, "forbidden")],
-        };
+        return wrapErrors(queryError(403, "forbidden"));
 
       const bans = await UserBan.find({
         where: {
@@ -111,24 +152,15 @@ export class UserBanResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 
   @Query(() => UserBansResponse)
-  @UseMiddleware(CheckBans)
-  async fetchBans(@Arg("id") id: string, @Ctx() { req }: Context) {
+  @UseMiddleware(CheckBans, AdminPerms)
+  async fetchBans(@Arg("id") id: string) {
     try {
-      const moderator = (await User.findOne({ id: req.session.user }))!;
-
       const offender = (await User.findOne({ id }))!;
-
-      if (!["sysadmin", "administrator", "moderator"].includes(moderator.role))
-        return {
-          errors: [queryError(403, "forbidden")],
-        };
 
       const bans = await UserBan.find({
         where: {
@@ -141,9 +173,7 @@ export class UserBanResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 }

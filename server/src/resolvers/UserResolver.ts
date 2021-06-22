@@ -1,7 +1,7 @@
 import argon2 from "argon2";
 import { User } from "src/entities/User";
 import { Context } from "src/types";
-import { queryError } from "src/utils/errors";
+import { queryError, wrapErrors } from "src/utils/errors";
 import { uuid } from "src/utils/ids";
 import { io } from "src/utils/users";
 import {
@@ -50,20 +50,18 @@ export class UserResolver {
   ): Promise<UserResponse> {
     try {
       if (await User.findOne({ where: { username } }))
-        return {
-          errors: [queryError(409, "username is already taken")],
-        };
+        return wrapErrors(queryError(409, "username is already taken"));
 
       if (username.length <= 2) {
-        return {
-          errors: [queryError(400, "username length must be greater than 2")],
-        };
+        return wrapErrors(
+          queryError(400, "username length must be greater than 2")
+        );
       }
 
       if (password.length <= 2) {
-        return {
-          errors: [queryError(400, "password length must be greater than 2")],
-        };
+        return wrapErrors(
+          queryError(400, "password length must be greater than 2")
+        );
       }
 
       if (
@@ -71,9 +69,7 @@ export class UserResolver {
           email
         )
       ) {
-        return {
-          errors: [queryError(400, "invalid email")],
-        };
+        return wrapErrors(queryError(400, "invalid email"));
       }
 
       const hashed = await argon2.hash(password);
@@ -93,9 +89,7 @@ export class UserResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 
@@ -108,15 +102,10 @@ export class UserResolver {
     try {
       const user = await User.findOne({ where: { username } });
 
-      if (!user)
-        return {
-          errors: [queryError(400, "username doesn't exist")],
-        };
+      if (!user) return wrapErrors(queryError(400, "username doesn't exist"));
 
       if (!(await argon2.verify(user.password, password)))
-        return {
-          errors: [queryError(401, "incorrect password")],
-        };
+        return wrapErrors(queryError(401, "incorrect password"));
 
       req.session.user = user.id;
 
@@ -124,9 +113,7 @@ export class UserResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 
@@ -139,9 +126,7 @@ export class UserResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 
@@ -154,10 +139,7 @@ export class UserResolver {
     try {
       const user = await User.findOne({ id: req.session.user });
 
-      if (!user)
-        return {
-          errors: [queryError(400, "user doesn't exist")],
-        };
+      if (!user) return wrapErrors(queryError(400, "user doesn't exist"));
 
       await User.update({ id: req.session.user }, data);
 
@@ -167,9 +149,7 @@ export class UserResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 
@@ -184,19 +164,14 @@ export class UserResolver {
 
       const user = (await User.findOne({ id }))!;
 
-      if (!user)
-        return {
-          errors: [queryError(400, "user doesn't exist")],
-        };
+      if (!user) return wrapErrors(queryError(400, "user doesn't exist"));
 
       if (
         id !== req.session.user &&
         (!["sysadmin", "administrator", "moderator"].includes(moderator.role) ||
           !io(moderator).isHigherThan(user))
       )
-        return {
-          errors: [queryError(403, "forbidden")],
-        };
+        return wrapErrors(queryError(403, "forbidden"));
 
       await User.delete(user);
 
@@ -204,9 +179,7 @@ export class UserResolver {
     } catch (e) {
       console.error(e);
 
-      return {
-        errors: [queryError(500, "internal server error")],
-      };
+      return wrapErrors(queryError(500, "internal server error"));
     }
   }
 }

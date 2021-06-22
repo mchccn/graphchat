@@ -9,8 +9,10 @@ import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { __milliseconds__, __prod__ } from "./constants";
+import { DirectMessage } from "./entities/DirectMessage";
 import { User } from "./entities/User";
 import { UserBan } from "./entities/UserBan";
+import { DirectMessageResolver } from "./resolvers/DirectMessageResolver";
 import { UserBanResolver } from "./resolvers/UserBanResolver";
 import { UserResolver } from "./resolvers/UserResolver";
 import root from "./routes/root";
@@ -29,7 +31,7 @@ import logger from "./utils/logging";
   const orm = await createConnection({
     type: "postgres",
     url: process.env.DB_URL,
-    entities: [User, UserBan],
+    entities: [User, UserBan, DirectMessage],
     synchronize: true,
     logging: !__prod__,
   });
@@ -60,7 +62,7 @@ import logger from "./utils/logging";
 
   const apollo = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, UserBanResolver],
+      resolvers: [UserResolver, UserBanResolver, DirectMessageResolver],
       validate: false,
       emitSchemaFile: true,
     }),
