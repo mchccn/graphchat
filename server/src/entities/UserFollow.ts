@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
@@ -13,8 +13,8 @@ import { User } from "./User";
 @ObjectType()
 export class UserFollow extends BaseEntity {
   @PrimaryGeneratedColumn()
-  @Field(() => String)
-  id!: string;
+  @Field(() => Int)
+  id!: number;
 
   @ManyToOne(() => User, { cascade: ["update"] })
   @JoinColumn()

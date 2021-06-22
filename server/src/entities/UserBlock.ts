@@ -1,20 +1,20 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./User";
 
 @Entity()
 @ObjectType()
 export class UserBlock extends BaseEntity {
-  @PrimaryColumn()
-  @Field(() => String)
-  id!: string;
+  @PrimaryGeneratedColumn()
+  @Field(() => Int)
+  id!: number;
 
   @ManyToOne(() => User, { cascade: ["update"] })
   @JoinColumn()

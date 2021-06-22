@@ -21,7 +21,7 @@ import CheckBans from "./guards/banned";
 import { UserBanEditInput } from "./inputs/UserBanEditInput";
 
 @ObjectType()
-class UserBanResponse {
+export class UserBanResponse {
   @Field(() => [QueryError], { nullable: true })
   errors?: QueryError[];
 
@@ -30,7 +30,7 @@ class UserBanResponse {
 }
 
 @ObjectType()
-class UserBansResponse {
+export class UserBansResponse {
   @Field(() => [QueryError], { nullable: true })
   errors?: QueryError[];
 
@@ -158,7 +158,7 @@ export class UserBanResolver {
 
   @Query(() => UserBansResponse)
   @UseMiddleware(CheckBans, AdminPerms)
-  async fetchBans(@Arg("id") id: string) {
+  async fetchBans(@Arg("id") id: string): Promise<UserBansResponse> {
     try {
       const offender = (await User.findOne({ id }))!;
 

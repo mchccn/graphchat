@@ -18,7 +18,7 @@ import { QueryError } from "./errors/QueryError";
 import CheckBans from "./guards/banned";
 
 @ObjectType()
-class DirectMessageResponse {
+export class DirectMessageResponse {
   @Field(() => [QueryError], { nullable: true })
   errors?: QueryError[];
 
@@ -27,7 +27,7 @@ class DirectMessageResponse {
 }
 
 @ObjectType()
-class DirectMessagesResponse {
+export class DirectMessagesResponse {
   @Field(() => [QueryError], { nullable: true })
   errors?: QueryError[];
 
@@ -56,9 +56,7 @@ export class DirectMessageResolver {
         (
           await UserBlock.find({
             where: {
-              user: sender.username,
               userId: req.session.user,
-              blocked: receiver.username,
               blockedId: id,
             },
           })
@@ -70,9 +68,7 @@ export class DirectMessageResolver {
         (
           await UserBlock.find({
             where: {
-              blocked: sender.username,
               blockedId: req.session.user,
-              user: receiver.username,
               userId: id,
             },
           })
@@ -103,14 +99,42 @@ export class DirectMessageResolver {
     @Ctx() { req }: Context
   ): Promise<DirectMessageResponse> {
     try {
-      const user = (await User.findOne({ id: req.session.user }))!;
+      const sender = (await User.findOne({ id: req.session.user }))!;
 
       const message = await DirectMessage.findOne({ id });
 
       if (!message) return wrapErrors(queryError(400, "message doesn't exist"));
 
-      if (message.senderId !== user.id)
+      if (message.senderId !== sender.id)
         return wrapErrors(queryError(403, "forbidden"));
+
+      const receiver = await User.findOne({ id: message.receiverId });
+
+      if (receiver) {
+        if (
+          (
+            await UserBlock.find({
+              where: {
+                userId: req.session.user,
+                blockedId: id,
+              },
+            })
+          ).length
+        )
+          return wrapErrors(queryError(400, "user is blocked"));
+
+        if (
+          (
+            await UserBlock.find({
+              where: {
+                blockedId: req.session.user,
+                userId: id,
+              },
+            })
+          ).length
+        )
+          return wrapErrors(queryError(400, "user has blocked you"));
+      }
 
       if (content.length > 2000)
         return wrapErrors(queryError(400, "content is too long"));
@@ -134,14 +158,42 @@ export class DirectMessageResolver {
     @Ctx() { req }: Context
   ): Promise<DirectMessageResponse> {
     try {
-      const user = (await User.findOne({ id: req.session.user }))!;
+      const sender = (await User.findOne({ id: req.session.user }))!;
 
       const message = await DirectMessage.findOne({ id });
 
       if (!message) return wrapErrors(queryError(400, "message doesn't exist"));
 
-      if (message.senderId !== user.id)
+      if (message.senderId !== sender.id)
         return wrapErrors(queryError(403, "forbidden"));
+
+      const receiver = await User.findOne({ id: message.receiverId });
+
+      if (receiver) {
+        if (
+          (
+            await UserBlock.find({
+              where: {
+                userId: req.session.user,
+                blockedId: id,
+              },
+            })
+          ).length
+        )
+          return wrapErrors(queryError(400, "user is blocked"));
+
+        if (
+          (
+            await UserBlock.find({
+              where: {
+                blockedId: req.session.user,
+                userId: id,
+              },
+            })
+          ).length
+        )
+          return wrapErrors(queryError(400, "user has blocked you"));
+      }
 
       await DirectMessage.delete(message);
 
