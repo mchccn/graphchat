@@ -19,7 +19,6 @@ export class UserBan extends BaseEntity {
   offender!: string;
 
   @Column()
-  @Field(() => String)
   offenderId!: string;
 
   @Column()
@@ -27,7 +26,6 @@ export class UserBan extends BaseEntity {
   moderator!: string;
 
   @Column()
-  @Field(() => String)
   moderatorId!: string;
 
   @Column({ type: "text" })

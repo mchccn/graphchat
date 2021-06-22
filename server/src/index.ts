@@ -10,8 +10,11 @@ import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { __milliseconds__, __prod__ } from "./constants";
 import { DirectMessage } from "./entities/DirectMessage";
+import { Post } from "./entities/Post";
+import { PostComment } from "./entities/PostComment";
 import { User } from "./entities/User";
 import { UserBan } from "./entities/UserBan";
+import { UserBlock } from "./entities/UserBlock";
 import { DirectMessageResolver } from "./resolvers/DirectMessageResolver";
 import { UserBanResolver } from "./resolvers/UserBanResolver";
 import { UserResolver } from "./resolvers/UserResolver";
@@ -31,7 +34,7 @@ import logger from "./utils/logging";
   const orm = await createConnection({
     type: "postgres",
     url: process.env.DB_URL,
-    entities: [User, UserBan, DirectMessage],
+    entities: [User, UserBan, UserBlock, DirectMessage, Post, PostComment],
     synchronize: true,
     logging: !__prod__,
   });

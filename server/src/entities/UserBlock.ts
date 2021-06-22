@@ -13,7 +13,6 @@ export class UserBlock extends BaseEntity {
   user!: string;
 
   @Column()
-  @Field(() => String)
   userId!: string;
 
   @Column()
@@ -21,6 +20,5 @@ export class UserBlock extends BaseEntity {
   blocked!: string;
 
   @Column()
-  @Field(() => String)
   blockedId!: string;
 }

@@ -42,7 +42,7 @@ type Mutation {
 
 type Query {
   fetchBans(id: String!): UserBansResponse!
-  getDMs(sender: String!): DirectMessagesResponse!
+  getDMs(limit: Float, offset: Float, sender: String!): DirectMessagesResponse!
   me: User
   user(id: String!): UserResponse!
 }
@@ -76,9 +76,7 @@ type UserBan {
   createdAt: String!
   expires: DateTime!
   moderator: String!
-  moderatorId: String!
   offender: String!
-  offenderId: String!
   reason: String!
 }
 
