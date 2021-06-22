@@ -1,6 +1,11 @@
 import { ApolloServer } from "apollo-server-express";
 import "dotenv/config";
 import "reflect-metadata";
+import { PostCommentResolver } from "src/resolvers/PostCommentResolver";
+import { PostResolver } from "src/resolvers/PostResolver";
+import { UserBlockResolver } from "src/resolvers/UserBlockResolver";
+import { UserFollowResolver } from "src/resolvers/UserFollowResolver";
+import { UserFriendResolver } from "src/resolvers/UserFriendResolver";
 import { buildSchema } from "type-graphql";
 import { DirectMessageResolver } from "../resolvers/DirectMessageResolver";
 import { UserBanResolver } from "../resolvers/UserBanResolver";
@@ -9,7 +14,16 @@ import { UserResolver } from "../resolvers/UserResolver";
 export default async () =>
   new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, UserBanResolver, DirectMessageResolver],
+      resolvers: [
+        UserResolver,
+        UserBanResolver,
+        UserBlockResolver,
+        UserFollowResolver,
+        UserFriendResolver,
+        DirectMessageResolver,
+        PostResolver,
+        PostCommentResolver,
+      ],
       validate: false,
       emitSchemaFile: true,
     }),
