@@ -5,14 +5,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./User";
 
 @Entity()
 @ObjectType()
-export class UserBlock extends BaseEntity {
-  @PrimaryColumn()
+export class UserFriendRequest extends BaseEntity {
+  @PrimaryGeneratedColumn()
   @Field(() => String)
   id!: string;
 
@@ -27,8 +27,8 @@ export class UserBlock extends BaseEntity {
   @ManyToOne(() => User, { cascade: ["update"] })
   @JoinColumn()
   @Field(() => User)
-  blocked!: User;
+  friend!: User;
 
   @Column()
-  blockedId!: string;
+  friendId!: string;
 }

@@ -14,7 +14,6 @@ export default async function CheckBans(
 
   const bans = await UserBan.find({
     where: {
-      offender: user.username,
       offenderId: user.id,
     },
   });
