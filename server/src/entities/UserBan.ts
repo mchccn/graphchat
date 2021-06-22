@@ -1,5 +1,11 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity()
 @ObjectType()
@@ -13,14 +19,24 @@ export class UserBan extends BaseEntity {
   offender!: string;
 
   @Column()
+  offenderId!: string;
+
+  @Column()
   @Field(() => String)
   moderator!: string;
+
+  @Column()
+  moderatorId!: string;
 
   @Column({ type: "text" })
   @Field(() => String)
   reason!: string;
 
   @Column({ type: "timestamptz" })
-  @Field(() => Date, { nullable: true })
-  expires?: Date;
+  @Field(() => Date)
+  expires!: Date;
+
+  @CreateDateColumn()
+  @Field(() => String)
+  createdAt!: Date;
 }
