@@ -62,10 +62,10 @@ export class UserResolver {
       username = username.trim();
 
       if (await User.findOne({ where: { username } }))
-        return wrapErrors(queryError(409, "username is already taken"));
+        return wrapErrors(queryError(409, "username already taken"));
 
       if (await User.findOne({ where: { email } }))
-        return wrapErrors(queryError(409, "email is already taken"));
+        return wrapErrors(queryError(409, "email already taken"));
 
       if (username.length <= 2) {
         return wrapErrors(
