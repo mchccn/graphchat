@@ -58,8 +58,14 @@ export class UserResolver {
     @Ctx() { req }: Context
   ): Promise<UserResponse> {
     try {
+      email = email.trim();
+      username = username.trim();
+
       if (await User.findOne({ where: { username } }))
         return wrapErrors(queryError(409, "username is already taken"));
+
+      if (await User.findOne({ where: { email } }))
+        return wrapErrors(queryError(409, "email is already taken"));
 
       if (username.length <= 2) {
         return wrapErrors(
