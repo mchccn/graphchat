@@ -16,12 +16,6 @@ export async function modlog({
   moderator: User;
   reason?: string;
 }) {
-  console.log(
-    type.length +
-      1 +
-      Math.abs(offender.username.length - moderator.username.length)
-  );
-
   const spacing = Math.abs(
     offender.username.length - moderator.username.length
   );
