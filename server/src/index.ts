@@ -1,27 +1,16 @@
-import { ApolloServer } from "apollo-server-express";
 import "dotenv/config";
 import "reflect-metadata";
-import { buildSchema } from "type-graphql";
 import app from "./app";
-import connect from "./database";
-import { DirectMessageResolver } from "./resolvers/DirectMessageResolver";
-import { UserBanResolver } from "./resolvers/UserBanResolver";
-import { UserResolver } from "./resolvers/UserResolver";
+import connectDatabase from "./database";
+import connectApollo from "./database/apollo";
 import logger from "./utils/logging";
 
 (async () => {
   const port = process.env.PORT ?? 4000;
 
-  const orm = await connect();
+  const orm = await connectDatabase();
 
-  const apollo = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [UserResolver, UserBanResolver, DirectMessageResolver],
-      validate: false,
-      emitSchemaFile: true,
-    }),
-    context: (ctx) => ctx,
-  });
+  const apollo = await connectApollo();
 
   apollo.applyMiddleware({ app });
 
