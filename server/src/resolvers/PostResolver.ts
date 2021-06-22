@@ -159,7 +159,7 @@ export class PostResolver {
     }
   }
 
-  @Query(() => PostResponse)
+  @Query(() => PostResponse, { nullable: true })
   @UseMiddleware(CheckBans)
   async getPost(@Arg("id") id: string): Promise<PostResponse> {
     try {

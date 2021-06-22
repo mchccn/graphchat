@@ -34,15 +34,18 @@ type Mutation {
   block(id: String!): UserBlockResponse!
   deleteDM(id: String!): DirectMessageResponse!
   deletePost(id: String!): PostResponse!
+  deletePostComment(id: String!): PostCommentResponse!
   deleteUser(id: String!): UserResponse!
   editBan(case: Float!, data: UserBanEditInput!): UserBanResponse!
   editDM(content: String!, id: String!): DirectMessageResponse!
   editPost(data: UpdatePostInput!, id: String!): PostResponse!
+  editPostComment(content: String!, id: String!): PostCommentResponse!
   fetchFriends: UserFriendsResponse!
   follow(id: String!): UserFollowResponse!
   ignoreFriend(id: Float!): UserFriendRequestResponse!
   login(input: UsernamePasswordInput!): UserResponse!
   post(content: String!, title: String!): PostResponse!
+  postComment(content: String!, id: String!): PostCommentResponse!
   register(input: UsernamePasswordEmailInput!): UserResponse!
   removeFriend(id: String!): UserFriendResponse!
   sendDM(message: String!, receiver: String!): DirectMessageResponse!
@@ -61,6 +64,25 @@ type Post {
   title: String!
 }
 
+type PostComment {
+  author: User!
+  content: String!
+  id: String!
+  likes: Int!
+  parent: PostComment!
+  post: Post!
+}
+
+type PostCommentResponse {
+  comment: PostComment
+  errors: [QueryError!]
+}
+
+type PostCommentsResponse {
+  comments: [PostComment!]
+  errors: [QueryError!]
+}
+
 type PostResponse {
   errors: [QueryError!]
   post: Post
@@ -72,7 +94,9 @@ type Query {
   fetchFollowed: UsersResponse!
   fetchFollowers: UsersResponse!
   getDMs(limit: Float, offset: Float, sender: String!): DirectMessagesResponse!
-  getPost(id: String!): PostResponse!
+  getPost(id: String!): PostResponse
+  getPostComment(id: String!): PostCommentResponse
+  getPostComments(id: String!): PostCommentsResponse
   me: User
   user(id: String!): UserResponse!
 }
