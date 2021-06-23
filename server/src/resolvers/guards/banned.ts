@@ -33,3 +33,33 @@ export default async function CheckBans(
 
   return next();
 }
+
+export async function CheckBansIfAuthed(
+  { context: { req } }: ResolverData<Context>,
+  next: NextFn
+) {
+  const user = await User.findOne({ id: req.session.user });
+
+  if (user) {
+    const bans = await UserBan.find({
+      where: {
+        offenderId: user.id,
+      },
+    });
+
+    const banned = bans.reduce((banned, ban) => {
+      if (banned) return banned;
+
+      if (Date.now() >= ban.expires.getTime()) {
+        UserBan.delete(ban);
+        return banned;
+      }
+
+      return true;
+    }, false);
+
+    if (banned) return wrapErrors(queryError(403, "user is banned"));
+  }
+
+  return next();
+}

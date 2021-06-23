@@ -21,6 +21,8 @@ p.bold {
 :root {
   font-size: 14px;
 
+  color: var(--color-primary-100);
+
   --color-button-text: #fff;
   --color-primary-100: #dee3ea;
   --color-primary-200: #b2bdcd;
@@ -37,6 +39,9 @@ p.bold {
   --color-accent-disabled: #bca3ed;
   --screen-height-reduction: 0px;
   --color-primary-100-translucent: rgba(222, 227, 234, 0.15);
+
+  overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 h1 {

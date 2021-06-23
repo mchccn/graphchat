@@ -1,8 +1,9 @@
 import { RedisStore } from "connect-redis";
 import cookie from "cookie";
 import parser from "cookie-parser";
-import { Application, Request } from "express";
+import { Application } from "express";
 import { createServer } from "http";
+import { Context } from "src/types";
 import logger from "src/utils/logging";
 import { Server } from "ws";
 
@@ -13,38 +14,43 @@ export default (app: Application, store: RedisStore) => {
 
   wss.on("listening", () => logger.success("Websockets server is running!"));
 
-  wss.on("connection", (ws, req) => {
-    console.log("CONNECTION");
+  wss.on("connection", async (ws, req: Context["req"]) => {
+    try {
+      if (!req.headers.cookie) return ws.terminate();
 
-    if (!req.headers.cookie) return ws.terminate();
+      const cookies = cookie.parse(req.headers.cookie);
 
-    const cookies = cookie.parse(req.headers.cookie);
+      const sid = parser.signedCookie(
+        cookies["reanvue.qid"],
+        process.env.COOKIE_SECRET!
+      );
 
-    const sid = parser.signedCookie(
-      cookies["connect.sid"],
-      process.env.COOKIE_SECRET!
-    );
+      if (!sid) return ws.terminate();
 
-    if (!sid) return ws.terminate();
+      await new Promise((resolve, reject) =>
+        store.get(sid, (err, session) => {
+          if (err) {
+            ws.terminate();
 
-    store.get(sid, function (err, ss) {
-      if (err) {
-        console.error(err);
+            return reject(err);
+          }
 
-        return ws.terminate();
-      }
+          if (!session) return ws.terminate();
 
-      if (!ss) return ws.terminate();
-
-      store.createSession(req as Request, ss);
-
-      //@ts-ignore
-      console.log(req.session);
+          return resolve(store.createSession(req, session));
+        })
+      );
 
       ws.on("message", (message) => {
         console.log(message);
       });
-    });
+
+      return;
+    } catch (err) {
+      console.error(err);
+
+      return ws.terminate();
+    }
   });
 
   return { wss, server };

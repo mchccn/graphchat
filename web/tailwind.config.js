@@ -1,3 +1,5 @@
+const defaults = require("tailwindcss/defaultConfig");
+
 module.exports = {
   darkMode: "class",
   purge: {
@@ -35,6 +37,7 @@ module.exports = {
       "7xl": "5rem",
     },
     colors: {
+      ...defaults.theme.colors,
       button: "var(--color-button-text)",
       transparent: "transparent",
       primary: {

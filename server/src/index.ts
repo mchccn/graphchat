@@ -12,7 +12,13 @@ import logger from "./utils/logging";
 
   const apollo = await connectApollo();
 
-  apollo.applyMiddleware({ app });
+  apollo.applyMiddleware({
+    app,
+    cors: {
+      origin: process.env.CLIENT_ADDRESS,
+      credentials: true,
+    },
+  });
 
   server.listen(port, () =>
     logger.success(`Server listening on port ${port}!`)

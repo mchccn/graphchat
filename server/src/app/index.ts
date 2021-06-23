@@ -5,6 +5,7 @@ import "dotenv/config";
 import express from "express";
 import session from "express-session";
 import RedisClient from "ioredis";
+import morgan from "morgan";
 import "reflect-metadata";
 import { __milliseconds__, __prod__ } from "../constants";
 import logger from "../utils/logging";
@@ -21,6 +22,7 @@ const client = new RedisClient(
 const store = new (connect(session))({ client });
 
 const app = express().use(
+  morgan("dev"),
   cors({
     origin: process.env.CLIENT_ADDRESS,
     credentials: true,
@@ -41,6 +43,7 @@ const app = express().use(
   express.json(),
   express.urlencoded({ extended: true }),
   cookies(),
+
   root
 );
 

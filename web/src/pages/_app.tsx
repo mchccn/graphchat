@@ -1,10 +1,18 @@
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client";
 import type { AppProps } from "next/app";
 import "../styles/style.css";
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
   cache: new InMemoryCache(),
+  link: new HttpLink({
+    uri: `${process.env.NEXT_PUBLIC_SERVER_ADDRESS}/graphql`,
+    credentials: "include",
+  }),
 });
 
 const App = ({ Component, pageProps }: AppProps) => {

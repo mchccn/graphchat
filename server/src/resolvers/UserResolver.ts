@@ -15,7 +15,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { QueryError } from "./errors/QueryError";
-import CheckBans from "./guards/banned";
+import CheckBans, { CheckBansIfAuthed } from "./guards/banned";
 import { UpdateUserInput } from "./inputs/UpdateUserInput";
 import {
   UsernamePasswordEmailInput,
@@ -43,7 +43,7 @@ export class UsersResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => User, { nullable: true })
-  @UseMiddleware(CheckBans)
+  @UseMiddleware(CheckBansIfAuthed)
   async me(@Ctx() { req }: Context) {
     if (!req.session.user) return null;
 
@@ -109,7 +109,7 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
-  @UseMiddleware(CheckBans)
+  @UseMiddleware(CheckBansIfAuthed)
   async login(
     @Arg("input") { username, password }: UsernamePasswordInput,
     @Ctx() { req }: Context
@@ -203,13 +203,13 @@ export class UserResolver {
     return new Promise((resolve) =>
       req.session.destroy((error) => {
         res.clearCookie("reanvue.qid");
+
         if (error) {
           console.error(error);
-          resolve(false);
-          return;
+          return resolve(false);
         }
 
-        resolve(true);
+        return resolve(true);
       })
     );
   }
