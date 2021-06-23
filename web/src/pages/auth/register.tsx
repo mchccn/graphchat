@@ -2,26 +2,12 @@ import React from "react";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Formik, Form } from "formik";
-import { gql, useMutation } from "@apollo/client";
+import { useRegisterMutation } from "../../generated/graphql";
+import { useRouter } from "next/router";
 
 const Register = () => {
-  const REGISTER_MUT = gql`
-    mutation Register($username: String!, $email: String!, $password: String!) {
-      register(
-        input: { username: $username, email: $email, password: $password }
-      ) {
-        errors {
-          status
-          message
-        }
-        user {
-          id
-        }
-      }
-    }
-  `;
-
-  const [register] = useMutation(REGISTER_MUT);
+  const [register] = useRegisterMutation();
+  const router = useRouter();
 
   return (
     <div className="grid place-items-center w-full h-full">
@@ -45,7 +31,7 @@ const Register = () => {
                   password: values.password,
                 },
               });
-              console.log(response.data.register.user.id);
+              router.push("/");
             } else {
               throw Error("Passwords don't match!");
             }
