@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { User } from "src/entities/User";
+import { UserBan } from "src/entities/UserBan";
 import { Context } from "src/types";
 import { queryError, wrapErrors } from "src/utils/errors";
 import { uuid } from "src/utils/ids";
@@ -109,7 +110,6 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
-  @UseMiddleware(CheckBans)
   async login(
     @Arg("input") { username, password }: UsernamePasswordInput,
     @Ctx() { req }: Context
@@ -121,6 +121,25 @@ export class UserResolver {
 
       if (!(await argon2.verify(user.password, password)))
         return wrapErrors(queryError(401, "incorrect password"));
+
+      const bans = await UserBan.find({
+        where: {
+          offenderId: user.id,
+        },
+      });
+
+      const banned = bans.reduce((banned, ban) => {
+        if (banned) return banned;
+
+        if (Date.now() >= ban.expires.getTime()) {
+          UserBan.delete(ban);
+          return banned;
+        }
+
+        return true;
+      }, false);
+
+      if (banned) return wrapErrors(queryError(403, "user is banned"));
 
       req.session.user = user.id;
 
@@ -203,13 +222,13 @@ export class UserResolver {
     return new Promise((resolve) =>
       req.session.destroy((error) => {
         res.clearCookie("reanvue.qid");
+
         if (error) {
           console.error(error);
-          resolve(false);
-          return;
+          return resolve(false);
         }
 
-        resolve(true);
+        return resolve(true);
       })
     );
   }

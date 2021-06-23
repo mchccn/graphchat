@@ -21,6 +21,8 @@ p.bold {
 :root {
   font-size: 14px;
 
+  color: var(--color-primary-100);
+
   --color-button-text: #fff;
   --color-primary-100: #dee3ea;
   --color-primary-200: #b2bdcd;
