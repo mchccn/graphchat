@@ -2,8 +2,27 @@ import React from "react";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Formik, Form } from "formik";
+import { gql, useMutation } from "@apollo/client";
 
 const Register = () => {
+  const REGISTER_MUT = gql`
+    mutation Register($username: String!, $email: String!, $password: String!) {
+      register(
+        input: { username: $username, email: $email, password: $password }
+      ) {
+        errors {
+          status
+          message
+        }
+        user {
+          id
+        }
+      }
+    }
+  `;
+
+  const [register] = useMutation(REGISTER_MUT);
+
   return (
     <div className="grid place-items-center w-full h-full">
       <div className="flex m-auto flex-col p-6 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
@@ -17,8 +36,19 @@ const Register = () => {
             password: "",
             confirmpassword: "",
           }}
-          onSubmit={(values) => {
-            console.log(values);
+          onSubmit={async (values) => {
+            if (values.password === values.confirmpassword) {
+              const response = await register({
+                variables: {
+                  username: values.username,
+                  email: values.email,
+                  password: values.password,
+                },
+              });
+              console.log(response.data.register.user.id);
+            } else {
+              throw Error("Passwords don't match!");
+            }
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
