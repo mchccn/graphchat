@@ -197,4 +197,20 @@ export class UserResolver {
       return wrapErrors(queryError(500, "internal server error"));
     }
   }
+
+  @Mutation(() => Boolean)
+  async logout(@Ctx() { req, res }: Context) {
+    return new Promise((resolve) =>
+      req.session.destroy((error) => {
+        res.clearCookie("reanvue.qid");
+        if (error) {
+          console.error(error);
+          resolve(false);
+          return;
+        }
+
+        resolve(true);
+      })
+    );
+  }
 }

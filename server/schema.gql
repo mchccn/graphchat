@@ -34,6 +34,7 @@ type Mutation {
   editBan(case: Float!, data: UserBanEditInput!): UserBanResponse!
   editDM(content: String!, id: String!): DirectMessageResponse!
   login(input: UsernamePasswordInput!): UserResponse!
+  logout: Boolean!
   register(input: UsernamePasswordEmailInput!): UserResponse!
   sendDM(message: String!, receiver: String!): DirectMessageResponse!
   unban(id: String!): UserBansResponse!
