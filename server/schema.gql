@@ -46,6 +46,7 @@ type Mutation {
   login(input: UsernamePasswordInput!): UserResponse!
   post(content: String!, title: String!): PostResponse!
   postComment(content: String!, id: String!): PostCommentResponse!
+  logout: Boolean!
   register(input: UsernamePasswordEmailInput!): UserResponse!
   removeFriend(id: String!): UserFriendResponse!
   sendDM(message: String!, receiver: String!): DirectMessageResponse!

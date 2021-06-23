@@ -1,4 +1,5 @@
 import { ExpressContext } from "apollo-server-express";
+import { Response } from "express";
 
 export interface Context extends ExpressContext {
   req: ExpressContext["req"] & {
@@ -6,4 +7,5 @@ export interface Context extends ExpressContext {
       user: string;
     };
   };
+  res: Response;
 }
