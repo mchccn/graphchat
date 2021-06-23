@@ -41,6 +41,7 @@ const app = express().use(
   express.json(),
   express.urlencoded({ extended: true }),
   cookies(),
+
   root
 );
 
