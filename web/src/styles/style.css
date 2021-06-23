@@ -64,10 +64,6 @@ p.small {
   font-size: 0.85rem;
 }
 
-a {
-  @apply cursor-pointer text-accent hover:text-accent-hover;
-}
-
 /* for firefox */
 * {
   scrollbar-width: thin;

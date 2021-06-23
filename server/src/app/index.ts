@@ -44,6 +44,8 @@ const app = express().use(
   root
 );
 
-ws(app, store);
+const { wss, server } = ws(app, store);
+
+export { wss, server };
 
 export default app;

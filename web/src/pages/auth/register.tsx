@@ -1,20 +1,15 @@
-import { Form, Formik } from "formik";
 import React from "react";
-import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
+import { Formik, Form } from "formik";
 
 const Register = () => {
   return (
     <div className="grid place-items-center w-full h-full">
       <div className="flex m-auto flex-col p-6 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
-        <h1 className="text-3xl text-primary-100 font-bold text-center">
+        <span className="text-3xl text-primary-100 font-bold text-center">
           Welcome to Reanvue
-        </h1>
-        <p className="text-primary-200 text-center">
-          Hello there! By registering, you agree to our{" "}
-          <a href="/terms">Terms of Service</a> and{" "}
-          <a href="/privacy">Privacy Policy</a>.
-        </p>
+        </span>
         <Formik
           initialValues={{
             username: "",
@@ -22,16 +17,17 @@ const Register = () => {
             password: "",
             confirmpassword: "",
           }}
-          onSubmit={async (values, formik) => {
+          onSubmit={(values) => {
             console.log(values);
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
-            <Form className="flex flex-col gap-3">
+            <Form>
               <Input
                 placeholder="Username"
                 name="username"
                 value={values.username}
+                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
@@ -39,6 +35,7 @@ const Register = () => {
                 name="email"
                 type="email"
                 value={values.email}
+                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
@@ -46,6 +43,7 @@ const Register = () => {
                 type="password"
                 name="password"
                 value={values.password}
+                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
@@ -53,6 +51,7 @@ const Register = () => {
                 type="password"
                 name="confirmpassword"
                 value={values.confirmpassword}
+                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Button

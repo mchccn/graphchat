@@ -3,6 +3,7 @@ import cookie from "cookie";
 import parser from "cookie-parser";
 import { Application, Request } from "express";
 import { createServer } from "http";
+import logger from "src/utils/logging";
 import { Server } from "ws";
 
 export default (app: Application, store: RedisStore) => {
@@ -10,7 +11,11 @@ export default (app: Application, store: RedisStore) => {
 
   const wss = new Server({ server });
 
+  wss.on("listening", () => logger.success("Websockets server is running!"));
+
   wss.on("connection", (ws, req) => {
+    console.log("CONNECTION");
+
     if (!req.headers.cookie) return ws.terminate();
 
     const cookies = cookie.parse(req.headers.cookie);
@@ -36,11 +41,11 @@ export default (app: Application, store: RedisStore) => {
       //@ts-ignore
       console.log(req.session);
 
-      ws.on("message", function incoming(message) {
-        console.log("received: %s", message);
+      ws.on("message", (message) => {
+        console.log(message);
       });
     });
   });
 
-  return wss;
+  return { wss, server };
 };
