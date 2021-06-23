@@ -1,21 +1,21 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import { Post } from "./Post";
+import { Article } from "./Article";
 import { User } from "./User";
 
 @Entity()
 @ObjectType()
-export class PostComment extends BaseEntity {
+export class ArticleComment extends BaseEntity {
   @PrimaryColumn()
   @Field(() => String)
   id!: string;
 
-  @ManyToOne(() => Post, { cascade: ["update"] })
-  @Field(() => Post)
-  post!: Post;
+  @ManyToOne(() => Article, { cascade: ["update"] })
+  @Field(() => Article)
+  article!: Article;
 
   @Column()
-  postId!: string;
+  articleId!: string;
 
   @ManyToOne(() => User, { cascade: ["update"] })
   @Field(() => User)
@@ -24,9 +24,9 @@ export class PostComment extends BaseEntity {
   @Column()
   authorId!: string;
 
-  @ManyToOne(() => PostComment, { cascade: ["update"] })
-  @Field(() => PostComment)
-  parent?: PostComment;
+  @ManyToOne(() => ArticleComment, { cascade: ["update"] })
+  @Field(() => ArticleComment)
+  parent?: ArticleComment;
 
   @Column()
   parentId?: string;

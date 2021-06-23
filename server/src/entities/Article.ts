@@ -10,7 +10,7 @@ import { User } from "./User";
 
 @Entity()
 @ObjectType()
-export class Post extends BaseEntity {
+export class Article extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   @Field(() => String)
   id!: string;
@@ -26,7 +26,7 @@ export class Post extends BaseEntity {
   @Field(() => String)
   title!: string;
 
-  @Column({ type: "text", unique: true })
+  @Column({ type: "text", default: 0 })
   @Field(() => String)
   slug!: string;
 

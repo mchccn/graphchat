@@ -9,6 +9,7 @@ import "reflect-metadata";
 import { __milliseconds__, __prod__ } from "../constants";
 import logger from "../utils/logging";
 import root from "./routes/root";
+import ws from "./ws";
 
 const client = new RedisClient(
   parseInt(process.env.REDIS_PORT!),
@@ -16,6 +17,8 @@ const client = new RedisClient(
 )
   .on("error", (e) => logger.error(`Redis error: ${e}`))
   .on("connect", () => logger.info("Connected to redis!"));
+
+const store = new (connect(session))({ client });
 
 const app = express().use(
   cors({
@@ -33,12 +36,16 @@ const app = express().use(
     },
     resave: false,
     saveUninitialized: false,
-    store: new (connect(session))({ client }),
+    store,
   }),
   express.json(),
   express.urlencoded({ extended: true }),
   cookies(),
   root
 );
+
+const { wss, server } = ws(app, store);
+
+export { wss, server };
 
 export default app;

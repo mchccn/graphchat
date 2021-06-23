@@ -1,5 +1,10 @@
 import "dotenv/config";
 import "reflect-metadata";
+import { Article } from "src/entities/Article";
+import { ArticleComment } from "src/entities/ArticleComment";
+import { UserFollow } from "src/entities/UserFollow";
+import { UserFriend } from "src/entities/UserFriend";
+import { UserFriendRequest } from "src/entities/UserFriendRequest";
 import { createConnection } from "typeorm";
 import { __prod__ } from "../constants";
 import { DirectMessage } from "../entities/DirectMessage";
@@ -14,7 +19,19 @@ export default async () => {
   const orm = await createConnection({
     type: "postgres",
     url: process.env.DB_URL,
-    entities: [User, UserBan, UserBlock, DirectMessage, Post, PostComment],
+    entities: [
+      User,
+      UserBan,
+      UserBlock,
+      UserFollow,
+      UserFriend,
+      UserFriendRequest,
+      DirectMessage,
+      Post,
+      PostComment,
+      Article,
+      ArticleComment,
+    ],
     synchronize: true,
     logging: !__prod__,
   });

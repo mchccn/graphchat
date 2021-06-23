@@ -1,6 +1,6 @@
 import "dotenv/config";
 import "reflect-metadata";
-import app from "./app";
+import app, { server } from "./app";
 import connectDatabase from "./database";
 import connectApollo from "./database/apollo";
 import logger from "./utils/logging";
@@ -14,5 +14,7 @@ import logger from "./utils/logging";
 
   apollo.applyMiddleware({ app });
 
-  app.listen(port, () => logger.success(`Server listening on port ${port}!`));
+  server.listen(port, () =>
+    logger.success(`Server listening on port ${port}!`)
+  );
 })().catch(console.error);
