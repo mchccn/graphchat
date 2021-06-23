@@ -1,6 +1,6 @@
 import React, {
-  DetailedHTMLProps,
   ButtonHTMLAttributes,
+  DetailedHTMLProps,
   ReactNode,
 } from "react";
 import { Spinner } from "./Spinner";

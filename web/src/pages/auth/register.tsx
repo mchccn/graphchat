@@ -1,15 +1,58 @@
+import { gql, useApolloClient } from "@apollo/client";
+import { Form, Formik } from "formik";
 import React from "react";
-import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
-import { Formik, Form } from "formik";
+import { Input } from "../../components/Input";
 
 const Register = () => {
+  const register = ({
+    username,
+    password,
+    email,
+  }: {
+    username: string;
+    password: string;
+    email: string;
+  }) => gql`
+  mutation {
+    register(input: {
+      username: "${username}"
+      password: "${password}"
+      email: "${email}"
+    }) {
+      errors {
+        status
+        message
+      }
+      user {
+        id
+        username
+        email
+        displayName
+        avatar
+        description
+        createdAt
+        updatedAt
+        status
+        role
+      }
+    }
+  }
+`;
+
+  const client = useApolloClient();
+
   return (
     <div className="grid place-items-center w-full h-full">
       <div className="flex m-auto flex-col p-6 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
-        <span className="text-3xl text-primary-100 font-bold text-center">
+        <h1 className="text-3xl text-primary-100 font-bold text-center">
           Welcome to Reanvue
-        </span>
+        </h1>
+        <p className="text-primary-200 text-center">
+          Hello there! By registering, you agree to our{" "}
+          <a href="/terms">Terms of Service</a> and{" "}
+          <a href="/privacy">Privacy Policy</a>.
+        </p>
         <Formik
           initialValues={{
             username: "",
@@ -17,17 +60,28 @@ const Register = () => {
             password: "",
             confirmpassword: "",
           }}
-          onSubmit={(values) => {
+          onSubmit={async (values, formik) => {
             console.log(values);
+
+            // ! Do input validation
+
+            const data = await client.mutate({
+              mutation: register(values),
+            });
+
+            // if (!data.data.errors) ! go to /app since we're authenticated
+
+            // ! test websockets and setup ws shit
+
+            console.log(data);
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
-            <Form>
+            <Form className="flex flex-col gap-3">
               <Input
                 placeholder="Username"
                 name="username"
                 value={values.username}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
@@ -35,7 +89,6 @@ const Register = () => {
                 name="email"
                 type="email"
                 value={values.email}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
@@ -43,7 +96,6 @@ const Register = () => {
                 type="password"
                 name="password"
                 value={values.password}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
@@ -51,7 +103,6 @@ const Register = () => {
                 type="password"
                 name="confirmpassword"
                 value={values.confirmpassword}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Button
