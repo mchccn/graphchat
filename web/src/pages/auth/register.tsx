@@ -1,47 +1,9 @@
-import { gql, useApolloClient } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React from "react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 
 const Register = () => {
-  const register = ({
-    username,
-    password,
-    email,
-  }: {
-    username: string;
-    password: string;
-    email: string;
-  }) => gql`
-  mutation {
-    register(input: {
-      username: "${username}"
-      password: "${password}"
-      email: "${email}"
-    }) {
-      errors {
-        status
-        message
-      }
-      user {
-        id
-        username
-        email
-        displayName
-        avatar
-        description
-        createdAt
-        updatedAt
-        status
-        role
-      }
-    }
-  }
-`;
-
-  const client = useApolloClient();
-
   return (
     <div className="grid place-items-center w-full h-full">
       <div className="flex m-auto flex-col p-6 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
@@ -62,18 +24,6 @@ const Register = () => {
           }}
           onSubmit={async (values, formik) => {
             console.log(values);
-
-            // ! Do input validation
-
-            const data = await client.mutate({
-              mutation: register(values),
-            });
-
-            // if (!data.data.errors) ! go to /app since we're authenticated
-
-            // ! test websockets and setup ws shit
-
-            console.log(data);
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
