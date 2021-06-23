@@ -2,8 +2,13 @@ import React from "react";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Formik, Form } from "formik";
+import { useRegisterMutation } from "../../generated/graphql";
+import { useRouter } from "next/router";
 
 const Register = () => {
+  const [register] = useRegisterMutation();
+  const router = useRouter();
+
   return (
     <div className="grid place-items-center w-full h-full">
       <div className="flex m-auto flex-col p-6 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
@@ -17,8 +22,19 @@ const Register = () => {
             password: "",
             confirmpassword: "",
           }}
-          onSubmit={(values) => {
-            console.log(values);
+          onSubmit={async (values) => {
+            if (values.password === values.confirmpassword) {
+              const response = await register({
+                variables: {
+                  username: values.username,
+                  email: values.email,
+                  password: values.password,
+                },
+              });
+              router.push("/");
+            } else {
+              throw Error("Passwords don't match!");
+            }
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
