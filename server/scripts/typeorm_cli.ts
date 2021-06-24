@@ -42,31 +42,56 @@ dotenv({
 
   await orm.runMigrations({ transaction: "none" });
 
-  const cmds = ["quit", "select"];
-
   const commands: Record<
-    typeof cmds[number],
-    (ctx: { args: string[] }) => unknown | Promise<unknown>
+    string,
+    {
+      description: string;
+      syntax: string;
+      execute: (ctx: { args: string[] }) => unknown | Promise<unknown>;
+    }
   > = {
-    async select({ args }) {
-      const [table, columns] = args;
-
-      const entity = entities.find((ent) => ent.name === table);
-
-      if (!entity) return `Entity ${table} does not exist.`;
-
-      const query = orm.createQueryBuilder().select().from(entity, table);
-
-      if (columns) query.select(columns.split(","));
-
-      try {
-        return query.execute();
-      } catch (e) {
-        return e.message;
-      }
+    help: {
+      description: "Displays all commands.",
+      syntax: "",
+      execute() {
+        return Object.entries(commands)
+          .map(
+            ([command, { description, syntax }]) =>
+              `${command.padEnd(10, " ")}${syntax.padEnd(
+                20,
+                " "
+              )}${description}`
+          )
+          .join("\n");
+      },
     },
-    quit() {
-      process.exit(0);
+    select: {
+      description: "Retrieves data from the database.",
+      syntax: "<table> [columns]",
+      execute({ args }) {
+        const [table, columns] = args;
+
+        const entity = entities.find((ent) => ent.name === table);
+
+        if (!entity) return `Entity ${table} does not exist.`;
+
+        const query = orm.createQueryBuilder().select().from(entity, table);
+
+        if (columns) query.select(columns.split(","));
+
+        try {
+          return query.execute();
+        } catch (e) {
+          return e.message;
+        }
+      },
+    },
+    quit: {
+      description: "Quits the CLI.",
+      syntax: "",
+      execute() {
+        process.exit(0);
+      },
     },
   } as const;
 
@@ -76,7 +101,7 @@ dotenv({
       name: "command",
       message: ">",
       validate: (value) =>
-        !value || cmds.includes(value.split(/\s+/)[0])
+        !value || Object.keys(commands).includes(value.split(/\s+/)[0])
           ? true
           : "Unknown command.",
     });
@@ -85,7 +110,7 @@ dotenv({
       const [cmd, ...args] = command.split(/\s+/);
 
       try {
-        const output = await commands[cmd]?.({ args });
+        const output = await commands[cmd]?.execute({ args });
 
         if (output) console.log(output);
       } catch (e) {
