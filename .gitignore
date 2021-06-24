@@ -15,3 +15,7 @@ dist/
 .DS_Store
 
 dump.rdb
+
+server/src/public/assets/avatars/*.*
+
+!server/src/public/assets/avatars/default.png

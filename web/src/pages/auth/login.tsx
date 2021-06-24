@@ -22,7 +22,7 @@ const Login = () => {
             username: "",
             password: "",
           }}
-          onSubmit={async (values, formik) => {
+          onSubmit={async (values) => {
             if (!values.username.trim())
               return setError(`username cannot be empty`);
 
@@ -51,37 +51,42 @@ const Login = () => {
             return router.push("/");
           }}
         >
-          {({ values, handleChange, isSubmitting, errors }) => (
+          {({ values, handleChange, isSubmitting }) => (
             <Form>
               <Input
+                className="my-1.75"
                 placeholder="Username"
                 name="username"
                 value={values.username}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
+                className="my-1.75"
                 placeholder="Password"
                 type="password"
                 name="password"
                 value={values.password}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Button
-                className="justify-center text-base py-3 mt-2"
+                className="justify-center text-base py-3 mt-2 w-full"
                 color="primary-300"
                 transition={true}
                 ringSize={4}
                 type="submit"
                 loading={isSubmitting}
-                style={{ width: "100%" }}
               >
                 Log in
               </Button>
               <span className="text-red-500 block h-4 mt-2">
                 {error || serverError || ""}
               </span>
+              <p className="text-sm text-primary-200">
+                Don't have an account?{" "}
+                <a className="text-accent" href="/auth/login">
+                  Register!
+                </a>
+              </p>
             </Form>
           )}
         </Formik>
