@@ -41,7 +41,9 @@ export class AssetResolver {
       const served = join(
         "assets",
         "avatars",
-        `${SHA1(hex(16)).toString()}.${filename.split(".").reverse()[0]}`
+        `${SHA1(hex(16) + Date.now().toString()).toString()}.${
+          filename.split(".").reverse()[0]
+        }`
       );
 
       const path = join("public", served);
