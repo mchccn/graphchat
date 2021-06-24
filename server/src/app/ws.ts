@@ -49,6 +49,8 @@ export default (app: Application, store: RedisStore) => {
         if (sockets.get(req.session.user))
           sockets.get(req.session.user)!.push(ws);
         else sockets.set(req.session.user, [ws]);
+
+        return;
       });
 
       ws.on("message", (message) => {
@@ -63,6 +65,8 @@ export default (app: Application, store: RedisStore) => {
 
           buffer = "";
         } catch {}
+
+        return;
       });
 
       return ws.on("close", () => {
@@ -74,6 +78,8 @@ export default (app: Application, store: RedisStore) => {
           if (!filtered.length) sockets.delete(req.session.user);
           else sockets.set(req.session.user, filtered);
         }
+
+        return;
       });
     } catch (err) {
       console.error(err);
