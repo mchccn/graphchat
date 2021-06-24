@@ -1,6 +1,7 @@
 import { ApolloServer } from "apollo-server-express";
 import "dotenv/config";
 import "reflect-metadata";
+import { __prod__ } from "src/constants";
 import { AssetResolver } from "src/resolvers/AssetResolver";
 import { PostCommentResolver } from "src/resolvers/PostCommentResolver";
 import { PostResolver } from "src/resolvers/PostResolver";
@@ -31,4 +32,5 @@ export default async () =>
     }),
     context: (ctx) => ctx,
     uploads: false,
+    playground: !__prod__,
   });
