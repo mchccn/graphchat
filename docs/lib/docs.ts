@@ -4,14 +4,14 @@ import path from "path";
 import remark from "remark";
 import html from "remark-html";
 
-const postsDirectory = path.join(process.cwd(), "posts");
+const docsDirectory = path.join(process.cwd(), "docs");
 
-export function getSortedPostsData() {
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = fileNames.map((fileName) => {
+export function getSortedDocsData() {
+  const fileNames = fs.readdirSync(docsDirectory);
+  const allDocsData = fileNames.map((fileName) => {
     const id = fileName.replace(/\.md$/, "");
 
-    const fullPath = path.join(postsDirectory, fileName);
+    const fullPath = path.join(docsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, "utf8");
 
     const matterResult = matter(fileContents);
@@ -22,7 +22,7 @@ export function getSortedPostsData() {
     };
   });
 
-  return allPostsData.sort((a, b) => {
+  return allDocsData.sort((a, b) => {
     if (a.index < b.index) {
       return 1;
     } else {
@@ -31,8 +31,8 @@ export function getSortedPostsData() {
   });
 }
 
-export function getAllPostIds() {
-  const fileNames = fs.readdirSync(postsDirectory);
+export function getAllDocsIds() {
+  const fileNames = fs.readdirSync(docsDirectory);
   return fileNames.map((fileName) => {
     return {
       params: {
@@ -42,8 +42,8 @@ export function getAllPostIds() {
   });
 }
 
-export async function getPostData(id: string) {
-  const fullPath = path.join(postsDirectory, `${id}.md`);
+export async function getDocData(id: string) {
+  const fullPath = path.join(docsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, "utf8");
 
   const matterResult = matter(fileContents);
