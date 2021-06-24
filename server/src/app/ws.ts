@@ -5,7 +5,9 @@ import { Application } from "express";
 import { createServer } from "http";
 import { Context } from "src/types";
 import logger from "src/utils/logging";
-import { Server } from "ws";
+import WebSocket, { Server } from "ws";
+
+export const sockets = new Map<string, WebSocket[]>();
 
 export default (app: Application, store: RedisStore) => {
   const server = createServer(app);
@@ -41,11 +43,38 @@ export default (app: Application, store: RedisStore) => {
         })
       );
 
-      ws.on("message", (message) => {
-        console.log(message);
+      let buffer = "";
+
+      ws.on("open", () => {
+        if (sockets.get(req.session.user))
+          sockets.get(req.session.user)!.push(ws);
+        else sockets.set(req.session.user, [ws]);
       });
 
-      return;
+      ws.on("message", (message) => {
+        const raw = message.toString("utf8");
+
+        buffer += raw;
+
+        try {
+          const data = JSON.parse(raw);
+
+          console.log(data);
+
+          buffer = "";
+        } catch {}
+      });
+
+      return ws.on("close", () => {
+        const websockets = sockets.get(req.session.user);
+
+        if (websockets) {
+          const filtered = websockets.filter((websocket) => websocket !== ws);
+
+          if (!filtered.length) sockets.delete(req.session.user);
+          else sockets.set(req.session.user, filtered);
+        }
+      });
     } catch (err) {
       console.error(err);
 
