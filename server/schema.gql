@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AvatarResponse {
+  errors: [QueryError!]
+  success: Boolean
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
@@ -32,6 +37,7 @@ type Mutation {
   addFriend(id: String!): UserFriendRequestResponse!
   ban(id: String!, length: Float, reason: String!): UserBanResponse!
   block(id: String!): UserBlockResponse!
+  changeAvatar(avatar: Upload!): AvatarResponse!
   deleteDM(id: String!): DirectMessageResponse!
   deletePost(id: String!): PostResponse!
   deletePostComment(id: String!): PostCommentResponse!
@@ -104,7 +110,7 @@ type Query {
 
 type QueryError {
   message: String!
-  status: Float!
+  status: Int!
 }
 
 input UpdatePostInput {
@@ -117,6 +123,9 @@ input UpdateUserInput {
   displayName: String
   status: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type User {
   avatar: String!

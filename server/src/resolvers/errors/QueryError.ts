@@ -1,8 +1,8 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class QueryError {
-  @Field(() => Number)
+  @Field(() => Int)
   status!: number;
 
   @Field(() => String)

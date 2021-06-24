@@ -4,8 +4,10 @@ import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import session from "express-session";
+import { graphqlUploadExpress } from "graphql-upload";
 import RedisClient from "ioredis";
 import morgan from "morgan";
+import { join } from "path";
 import "reflect-metadata";
 import { __milliseconds__, __prod__ } from "../constants";
 import logger from "../utils/logging";
@@ -21,31 +23,36 @@ const client = new RedisClient(
 
 const store = new (connect(session))({ client });
 
-const app = express().use(
-  morgan("dev"),
-  cors({
-    origin: process.env.CLIENT_ADDRESS,
-    credentials: true,
-  }),
-  session({
-    name: "reanvue.qid",
-    secret: process.env.COOKIE_SECRET!,
-    cookie: {
-      maxAge: __milliseconds__.YEAR,
-      httpOnly: true,
-      sameSite: "lax",
-      secure: __prod__,
-    },
-    resave: false,
-    saveUninitialized: false,
-    store,
-  }),
-  express.json(),
-  express.urlencoded({ extended: true }),
-  cookies(),
-
-  root
-);
+const app = express()
+  .use(
+    morgan("dev"),
+    cors({
+      origin: process.env.CLIENT_ADDRESS,
+      credentials: true,
+    }),
+    session({
+      name: "reanvue.qid",
+      secret: process.env.COOKIE_SECRET!,
+      cookie: {
+        maxAge: __milliseconds__.YEAR,
+        httpOnly: true,
+        sameSite: "lax",
+        secure: __prod__,
+      },
+      resave: false,
+      saveUninitialized: false,
+      store,
+    }),
+    express.json(),
+    express.urlencoded({ extended: true }),
+    cookies(),
+    express.static(join(__dirname, "..", "public")),
+    root
+  )
+  .use(
+    "/graphql",
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 })
+  );
 
 const { wss, server } = ws(app, store);
 

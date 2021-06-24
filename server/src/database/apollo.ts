@@ -1,6 +1,7 @@
 import { ApolloServer } from "apollo-server-express";
 import "dotenv/config";
 import "reflect-metadata";
+import { AssetResolver } from "src/resolvers/AssetResolver";
 import { PostCommentResolver } from "src/resolvers/PostCommentResolver";
 import { PostResolver } from "src/resolvers/PostResolver";
 import { UserBlockResolver } from "src/resolvers/UserBlockResolver";
@@ -23,9 +24,11 @@ export default async () =>
         DirectMessageResolver,
         PostResolver,
         PostCommentResolver,
+        AssetResolver,
       ],
       validate: false,
       emitSchemaFile: true,
     }),
     context: (ctx) => ctx,
+    uploads: false,
   });
