@@ -24,7 +24,7 @@ const Register = () => {
             password: "",
             confirmpassword: "",
           }}
-          onSubmit={async (values, formik) => {
+          onSubmit={async (values) => {
             if (!values.username.trim())
               return setError(`username cannot be empty`);
 
@@ -65,50 +65,55 @@ const Register = () => {
           {({ values, handleChange, isSubmitting }) => (
             <Form>
               <Input
+                className="my-1.75"
                 placeholder="Username"
                 name="username"
                 value={values.username}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
+                className="my-1.75"
                 placeholder="Email"
                 name="email"
                 type="email"
                 value={values.email}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
+                className="my-1.75"
                 placeholder="Password"
                 type="password"
                 name="password"
                 value={values.password}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Input
+                className="my-1.75"
                 placeholder="Confirm Password"
                 type="password"
                 name="confirmpassword"
                 value={values.confirmpassword}
-                style={{ marginTop: "8px", marginBottom: "8px" }}
                 onChange={handleChange}
               />
               <Button
-                className="justify-center text-base py-3 mt-2"
+                className="justify-center text-base py-3 mt-2 w-full"
                 color="primary-300"
                 transition={true}
                 ringSize={4}
                 type="submit"
                 loading={isSubmitting}
-                style={{ width: "100%" }}
               >
                 Register
               </Button>
-              <span className="text-red-500 block h-4 mt-2">
+              <span className="text-red-500 block h-4 mt-2 mb-1">
                 {error || serverError || ""}
               </span>
+              <p className="text-sm text-primary-200">
+                Already have an account?{" "}
+                <a className="text-accent" href="/auth/login">
+                  Log in!
+                </a>
+              </p>
             </Form>
           )}
         </Formik>
