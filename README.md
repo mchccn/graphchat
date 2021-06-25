@@ -6,17 +6,7 @@ The Developer's Connection
 
 ### Web
 
-```bash
-# Install dependencies
-$ yarn
-
-# Serve
-$ yarn dev:web
-
-# Build for production and launch server
-$ yarn build:web
-$ yarn start:web
-```
+Read the README.md inside the `web/` directory for instructions.
 
 ### Server
 
