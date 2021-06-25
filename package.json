@@ -1,24 +1,18 @@
 {
-  "name": "reanuve",
+  "name": "graphchat",
   "private": true,
   "workspaces": [
     "server",
-    "web",
-    "docs"
+    "web"
   ],
   "scripts": {
-    "build:server": "concurrently \"yarn workspace server run build\"",
-    "dev:server": "concurrently \"yarn workspace server run dev\"",
-    "start:server": "concurrently \"yarn workspace server run start\"",
-    "clean:logs:server": "concurrently \"yarn workspace server run clean:logs\"",
-    "build:web": "concurrently \"yarn workspace web run build\"",
-    "dev:web": "concurrently \"yarn workspace web run dev\"",
-    "start:web": "concurrently \"yarn workspace web run start\"",
-    "build:docs": "concurrently \"yarn workspace docs run build\"",
-    "dev:docs": "concurrently \"yarn workspace docs run dev\"",
-    "start:docs": "concurrently \"yarn workspace docs run start\""
+    "build:server": "yarn workspace server run build",
+    "dev:server": "yarn workspace server run dev",
+    "start:server": "yarn workspace server run start",
+    "clean:logs:server": "yarn workspace server run clean:logs",
+    "build:web": "yarn workspace web run build",
+    "dev:web": "yarn workspace web run dev",
+    "start:web": "yarn workspace web run start"
   },
-  "dependencies": {
-    "concurrently": "^6.2.0"
-  }
+  "dependencies": {}
 }
