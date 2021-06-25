@@ -15,6 +15,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { QueryError } from "./errors/QueryError";
+import { pubsub } from "./EventsResolver";
 import CheckBans from "./guards/banned";
 
 @ObjectType()
@@ -45,8 +46,7 @@ export class DirectMessageResolver {
     @Ctx() { req }: Context
   ): Promise<DirectMessageResponse> {
     try {
-      if (content.length > 2000)
-        return wrapErrors(queryError(400, "content is too long"));
+      if (content.length > 2000) return wrapErrors(queryError(400, "content is too long"));
 
       const sender = (await User.findOne(req.session.user))!;
 
@@ -85,6 +85,8 @@ export class DirectMessageResolver {
         content,
       }).save();
 
+      await pubsub.publish("NEW_DM", message);
+
       return { message };
     } catch (e) {
       console.error(e);
@@ -107,8 +109,7 @@ export class DirectMessageResolver {
 
       if (!message) return wrapErrors(queryError(400, "message doesn't exist"));
 
-      if (message.senderId !== sender.id)
-        return wrapErrors(queryError(403, "forbidden"));
+      if (message.senderId !== sender.id) return wrapErrors(queryError(403, "forbidden"));
 
       const receiver = await User.findOne({ id: message.receiverId });
 
@@ -138,8 +139,7 @@ export class DirectMessageResolver {
           return wrapErrors(queryError(400, "user has blocked you"));
       }
 
-      if (content.length > 2000)
-        return wrapErrors(queryError(400, "content is too long"));
+      if (content.length > 2000) return wrapErrors(queryError(400, "content is too long"));
 
       message.content = content;
 
@@ -155,10 +155,7 @@ export class DirectMessageResolver {
 
   @Mutation(() => DirectMessageResponse)
   @UseMiddleware(CheckBans)
-  async deleteDM(
-    @Arg("id") id: string,
-    @Ctx() { req }: Context
-  ): Promise<DirectMessageResponse> {
+  async deleteDM(@Arg("id") id: string, @Ctx() { req }: Context): Promise<DirectMessageResponse> {
     try {
       const sender = (await User.findOne(req.session.user))!;
 
@@ -166,8 +163,7 @@ export class DirectMessageResolver {
 
       if (!message) return wrapErrors(queryError(400, "message doesn't exist"));
 
-      if (message.senderId !== sender.id)
-        return wrapErrors(queryError(403, "forbidden"));
+      if (message.senderId !== sender.id) return wrapErrors(queryError(403, "forbidden"));
 
       const receiver = await User.findOne({ id: message.receiverId });
 
