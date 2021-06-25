@@ -3,8 +3,6 @@ import "dotenv/config";
 import "reflect-metadata";
 import { __prod__ } from "src/constants";
 import { AssetResolver } from "src/resolvers/AssetResolver";
-import { PostCommentResolver } from "src/resolvers/PostCommentResolver";
-import { PostResolver } from "src/resolvers/PostResolver";
 import { UserBlockResolver } from "src/resolvers/UserBlockResolver";
 import { UserFriendResolver } from "src/resolvers/UserFriendResolver";
 import { buildSchema } from "type-graphql";
@@ -21,8 +19,6 @@ export default async () =>
         UserBlockResolver,
         UserFriendResolver,
         DirectMessageResolver,
-        PostResolver,
-        PostCommentResolver,
         AssetResolver,
       ],
       validate: false,

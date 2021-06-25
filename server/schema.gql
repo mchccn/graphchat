@@ -39,20 +39,13 @@ type Mutation {
   block(id: String!): UserBlockResponse!
   changeAvatar(avatar: Upload!): AvatarResponse!
   deleteDM(id: String!): DirectMessageResponse!
-  deletePost(id: String!): PostResponse!
-  deletePostComment(id: String!): PostCommentResponse!
   deleteUser(id: String!): UserResponse!
   editBan(case: Float!, data: UserBanEditInput!): UserBanResponse!
   editDM(content: String!, id: String!): DirectMessageResponse!
-  editPost(data: UpdatePostInput!, id: String!): PostResponse!
-  editPostComment(content: String!, id: String!): PostCommentResponse!
   fetchFriends: UserFriendsResponse!
   ignoreFriend(id: Float!): UserFriendRequestResponse!
   login(input: UsernamePasswordInput!): UserResponse!
   logout: Boolean!
-  post(content: String!, title: String!): PostResponse!
-  postComment(content: String!, id: String!): PostCommentResponse!
-  postReplyComment(content: String!, id: String!): PostCommentResponse!
   register(input: UsernamePasswordEmailInput!): UserResponse!
   removeFriend(id: String!): UserFriendResponse!
   sendDM(message: String!, receiver: String!): DirectMessageResponse!
@@ -61,46 +54,10 @@ type Mutation {
   updateUser(data: UpdateUserInput!): UserResponse
 }
 
-type Post {
-  author: User!
-  content: String!
-  id: String!
-  likes: Int!
-  slug: String!
-  title: String!
-}
-
-type PostComment {
-  author: User!
-  content: String!
-  id: String!
-  likes: Int!
-  parent: PostComment!
-  post: Post!
-}
-
-type PostCommentResponse {
-  comment: PostComment
-  errors: [QueryError!]
-}
-
-type PostCommentsResponse {
-  comments: [PostComment!]
-  errors: [QueryError!]
-}
-
-type PostResponse {
-  errors: [QueryError!]
-  post: Post
-}
-
 type Query {
   fetchBans(id: String!): UserBansResponse!
   fetchBlocks(id: String!): UserBlocksResponse!
   getDMs(limit: Float, offset: Float, sender: String!): DirectMessagesResponse!
-  getPost(id: String!): PostResponse
-  getPostComment(id: String!): PostCommentResponse
-  getPostComments(id: String!): PostCommentsResponse
   me: User
   user(id: String!): UserResponse!
 }
@@ -108,11 +65,6 @@ type Query {
 type QueryError {
   message: String!
   status: Int!
-}
-
-input UpdatePostInput {
-  content: String
-  title: String
 }
 
 input UpdateUserInput {
