@@ -1,5 +1,6 @@
 import { Post } from "src/entities/Post";
 import { PostComment } from "src/entities/PostComment";
+import { User } from "src/entities/User";
 import { Context } from "src/types";
 import { queryError, wrapErrors } from "src/utils/errors";
 import {
@@ -59,6 +60,8 @@ export class PostCommentResolver {
 
       const comment = await PostComment.create({
         authorId: req.session.user,
+        author: await User.findOne(req.session.user),
+        post: await Post.findOne(id),
         content,
         postId: id,
       }).save();

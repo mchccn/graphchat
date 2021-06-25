@@ -1,4 +1,5 @@
 import { Post } from "src/entities/Post";
+import { User } from "src/entities/User";
 import { Context } from "src/types";
 import { queryError, wrapErrors } from "src/utils/errors";
 import { toSlug } from "src/utils/slugs";
@@ -64,6 +65,7 @@ export class PostResolver {
         );
 
       const post = await Post.create({
+        author: await User.findOne(req.session.user),
         authorId: req.session.user,
         content,
         title,

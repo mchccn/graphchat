@@ -7,7 +7,7 @@ export default async function AdminPerms(
   { context: { req } }: ResolverData<Context>,
   next: NextFn
 ) {
-  const moderator = await User.findOne({ id: req.session.user });
+  const moderator = await User.findOne(req.session.user);
 
   if (!moderator) throw new Error("unauthorized");
 

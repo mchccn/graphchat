@@ -47,7 +47,7 @@ export class UserResolver {
   async me(@Ctx() { req }: Context) {
     if (!req.session.user) return null;
 
-    const user = await User.findOne({ id: req.session.user });
+    const user = await User.findOne(req.session.user);
 
     return user;
   }
@@ -135,7 +135,7 @@ export class UserResolver {
   @Query(() => UserResponse)
   async user(@Arg("id") id: string): Promise<UserResponse> {
     try {
-      const user = await User.findOne({ id });
+      const user = await User.findOne(id);
 
       return { user };
     } catch (e) {
@@ -152,7 +152,7 @@ export class UserResolver {
     @Ctx() { req }: Context
   ): Promise<UserResponse> {
     try {
-      const user = await User.findOne({ id: req.session.user });
+      const user = await User.findOne(req.session.user);
 
       if (!user) return wrapErrors(queryError(400, "user doesn't exist"));
 
@@ -175,9 +175,9 @@ export class UserResolver {
     @Ctx() { req }: Context
   ): Promise<UserResponse> {
     try {
-      const moderator = (await User.findOne({ id: req.session.user }))!;
+      const moderator = (await User.findOne(req.session.user))!;
 
-      const user = (await User.findOne({ id }))!;
+      const user = (await User.findOne(id))!;
 
       if (!user) return wrapErrors(queryError(400, "user doesn't exist"));
 

@@ -59,7 +59,7 @@ export class AssetResolver {
       );
 
       if (success) {
-        const user = (await User.findOne({ id: req.session.user }))!;
+        const user = (await User.findOne(req.session.user))!;
 
         user.avatar = `${process.env.SERVER_ADDRESS}/${served}`;
 

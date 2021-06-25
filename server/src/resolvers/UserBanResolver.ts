@@ -49,9 +49,9 @@ export class UserBanResolver {
     @Ctx() { req }: Context
   ): Promise<UserBanResponse> {
     try {
-      const moderator = (await User.findOne({ id: req.session.user }))!;
+      const moderator = (await User.findOne(req.session.user))!;
 
-      const offender = (await User.findOne({ id }))!;
+      const offender = (await User.findOne(id))!;
 
       if (!io(moderator).isHigherThan(offender))
         return wrapErrors(queryError(403, "forbidden"));
@@ -94,7 +94,7 @@ export class UserBanResolver {
     @Ctx() { req }: Context
   ): Promise<UserBanResponse> {
     try {
-      const moderator = (await User.findOne({ id: req.session.user }))!;
+      const moderator = (await User.findOne(req.session.user))!;
 
       const ban = await UserBan.findOne({
         where: {
@@ -132,9 +132,9 @@ export class UserBanResolver {
     @Ctx() { req }: Context
   ): Promise<UserBansResponse> {
     try {
-      const moderator = (await User.findOne({ id: req.session.user }))!;
+      const moderator = (await User.findOne(req.session.user))!;
 
-      const offender = (await User.findOne({ id }))!;
+      const offender = (await User.findOne(id))!;
 
       if (!io(moderator).isHigherThan(offender))
         return wrapErrors(queryError(403, "forbidden"));
@@ -160,7 +160,7 @@ export class UserBanResolver {
   @UseMiddleware(CheckBans, AdminPerms)
   async fetchBans(@Arg("id") id: string): Promise<UserBansResponse> {
     try {
-      const offender = (await User.findOne({ id }))!;
+      const offender = (await User.findOne(id))!;
 
       const bans = await UserBan.find({
         where: {

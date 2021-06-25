@@ -1,3 +1,4 @@
+import { User } from "src/entities/User";
 import { UserFollow } from "src/entities/UserFollow";
 import { queryError, wrapErrors } from "src/utils/errors";
 import {
@@ -53,6 +54,8 @@ export class UserFollowResolver {
         return wrapErrors(queryError(405, "already following this user"));
 
       const follow = await UserFollow.create({
+        user: await User.findOne(req.session.user),
+        followed,
         userId: req.session.user,
         followedId: id,
       }).save();

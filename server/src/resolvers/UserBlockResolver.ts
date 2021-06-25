@@ -42,9 +42,9 @@ export class UserBlockResolver {
     @Ctx() { req }: Context
   ): Promise<UserBlockResponse> {
     try {
-      const user = (await User.findOne({ id: req.session.user }))!;
+      const user = (await User.findOne(req.session.user))!;
 
-      const blocked = await User.findOne({ id });
+      const blocked = await User.findOne(id);
 
       if (!blocked) return wrapErrors(queryError(400, "user doesn't exist"));
 
@@ -80,7 +80,7 @@ export class UserBlockResolver {
     @Ctx() { req }: Context
   ): Promise<UserBlocksResponse> {
     try {
-      const blocked = await User.findOne({ id });
+      const blocked = await User.findOne(id);
 
       if (!blocked) return wrapErrors(queryError(400, "user doesn't exist"));
 

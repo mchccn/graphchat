@@ -48,9 +48,9 @@ export class DirectMessageResolver {
       if (content.length > 2000)
         return wrapErrors(queryError(400, "content is too long"));
 
-      const sender = (await User.findOne({ id: req.session.user }))!;
+      const sender = (await User.findOne(req.session.user))!;
 
-      const receiver = (await User.findOne({ id }))!;
+      const receiver = (await User.findOne(id))!;
 
       if (
         (
@@ -80,6 +80,8 @@ export class DirectMessageResolver {
         id: uuid(),
         sender,
         receiver,
+        receiverId: id,
+        senderId: req.session.user,
         content,
       }).save();
 
@@ -99,7 +101,7 @@ export class DirectMessageResolver {
     @Ctx() { req }: Context
   ): Promise<DirectMessageResponse> {
     try {
-      const sender = (await User.findOne({ id: req.session.user }))!;
+      const sender = (await User.findOne(req.session.user))!;
 
       const message = await DirectMessage.findOne({ id });
 
@@ -158,7 +160,7 @@ export class DirectMessageResolver {
     @Ctx() { req }: Context
   ): Promise<DirectMessageResponse> {
     try {
-      const sender = (await User.findOne({ id: req.session.user }))!;
+      const sender = (await User.findOne(req.session.user))!;
 
       const message = await DirectMessage.findOne({ id });
 
@@ -216,7 +218,7 @@ export class DirectMessageResolver {
     try {
       if (!sender) return wrapErrors(queryError(400, "no sender provided"));
 
-      const receiver = (await User.findOne({ id: req.session.user }))!;
+      const receiver = (await User.findOne(req.session.user))!;
 
       const messages = await DirectMessage.find({
         where: {

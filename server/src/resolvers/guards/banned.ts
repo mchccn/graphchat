@@ -8,7 +8,7 @@ export default async function CheckBans(
   { context: { req } }: ResolverData<Context>,
   next: NextFn
 ) {
-  const user = await User.findOne({ id: req.session.user });
+  const user = await User.findOne(req.session.user);
 
   if (!user) return wrapErrors(queryError(401, "unauthorized"));
 
@@ -38,7 +38,7 @@ export async function CheckBansIfAuthed(
   { context: { req } }: ResolverData<Context>,
   next: NextFn
 ) {
-  const user = await User.findOne({ id: req.session.user });
+  const user = await User.findOne(req.session.user);
 
   if (user) {
     const bans = await UserBan.find({

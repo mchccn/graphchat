@@ -60,7 +60,7 @@ export class UserFriendResolver {
     @Ctx() { req }: Context
   ): Promise<UserFriendRequestResponse> {
     try {
-      const friend = await User.findOne({ id });
+      const friend = await User.findOne(id);
 
       if (!friend) return wrapErrors(queryError(400, "user doesn't exist"));
 
@@ -75,6 +75,8 @@ export class UserFriendResolver {
         return wrapErrors(queryError(405, "outgoing friend request"));
 
       const request = await UserFriendRequest.create({
+        user: await User.findOne(req.session.user),
+        friend,
         userId: req.session.user,
         friendId: id,
       }).save();
@@ -102,13 +104,21 @@ export class UserFriendResolver {
       if (req.session.user !== request.friendId)
         return wrapErrors(queryError(403, "forbidden"));
 
+      const user = await User.findOne(req.session.user);
+
+      const friended = await User.findOne(request.friendId);
+
       const friend = await UserFriend.create({
+        user,
+        friended,
         userId: req.session.user,
         friendedId: request.friendId,
       }).save();
 
       /* mutual relationship */
       await UserFriend.create({
+        user: friended,
+        friended: user,
         userId: request.friendId,
         friendedId: req.session.user,
       }).save();
