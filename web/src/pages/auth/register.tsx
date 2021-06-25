@@ -4,20 +4,16 @@ import React, { useState } from "react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useRegisterMutation } from "../../generated/graphql";
-import capitalizeFirstLetter from "../../utils/capitalize";
 
 const Register = () => {
   const [register] = useRegisterMutation();
-  const [serverError, setServerError] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
   return (
     <div className="grid place-items-center text-center w-full h-full">
       <div className="flex m-auto flex-col px-6 pt-6 pb-4 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
-        <span className="text-3xl text-primary-100 font-bold text-center">
-          Welcome to Reanvue
-        </span>
+        <span className="text-3xl text-primary-100 font-bold text-center">Welcome to Reanvue</span>
         <Formik
           initialValues={{
             username: "",
@@ -26,13 +22,11 @@ const Register = () => {
             confirmpassword: "",
           }}
           onSubmit={async (values) => {
-            if (!values.username.trim())
-              return setError(`username cannot be empty`);
+            if (!values.username.trim()) return setError(`username cannot be empty`);
 
             if (!values.email.trim()) return setError(`email cannot be empty`);
 
-            if (!values.password.trim())
-              return setError(`password cannot be empty`);
+            if (!values.password.trim()) return setError(`password cannot be empty`);
 
             if (!values.confirmpassword.trim())
               return setError(`password confirmation cannot be empty`);
@@ -48,17 +42,9 @@ const Register = () => {
               },
             });
 
-            if (errors?.length) {
-              setServerError(errors[0].message);
+            if (errors?.length) return setError(errors[0].message);
 
-              return;
-            }
-
-            if (data?.register.errors) {
-              setError(data.register.errors[0].message);
-
-              return;
-            }
+            if (data?.register.errors) return setError(data.register.errors[0].message);
 
             return router.push("/");
           }}
@@ -106,11 +92,7 @@ const Register = () => {
               >
                 Register
               </Button>
-              <span className="text-red-500 block h-4 mt-2 mb-1">
-                {capitalizeFirstLetter(error) ||
-                  capitalizeFirstLetter(serverError) ||
-                  ""}
-              </span>
+              <span className="text-red-500 block h-4 mt-2 mb-1">{error ?? ""}</span>
               <p className="text-md text-primary-200">
                 Already have an account?
                 <a className="text-accent m-1" href="/auth/login">

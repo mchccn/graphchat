@@ -4,31 +4,25 @@ import React, { useState } from "react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useLoginMutation } from "../../generated/graphql";
-import capitalizeFirstLetter from "../../utils/capitalize";
 
 const Login = () => {
   const [login] = useLoginMutation();
-  const [serverError, setServerError] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
   return (
     <div className="grid place-items-center text-center w-full h-full">
       <div className="flex m-auto flex-col px-6 pt-6 pb-4 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
-        <span className="text-3xl text-primary-100 font-bold text-center">
-          Welcome back
-        </span>
+        <span className="text-3xl text-primary-100 font-bold text-center">Welcome back</span>
         <Formik
           initialValues={{
             username: "",
             password: "",
           }}
           onSubmit={async (values) => {
-            if (!values.username.trim())
-              return setError(`username cannot be empty`);
+            if (!values.username.trim()) return setError(`username cannot be empty`);
 
-            if (!values.password.trim())
-              return setError(`password cannot be empty`);
+            if (!values.password.trim()) return setError(`password cannot be empty`);
 
             const { data, errors } = await login({
               variables: {
@@ -37,17 +31,9 @@ const Login = () => {
               },
             });
 
-            if (errors?.length) {
-              setServerError(errors[0].message);
+            if (errors?.length) return setError(errors[0].message);
 
-              return;
-            }
-
-            if (data?.login.errors) {
-              setError(data.login.errors[0].message);
-
-              return;
-            }
+            if (data?.login.errors) return setError(data.login.errors[0].message);
 
             return router.push("/");
           }}
@@ -79,11 +65,7 @@ const Login = () => {
               >
                 Log in
               </Button>
-              <span className="text-red-500 block h-4 mt-2 mb-2">
-                {`${capitalizeFirstLetter(error)}` ||
-                  `${serverError.charAt(0).toUpperCase()}` ||
-                  ""}
-              </span>
+              <span className="text-red-500 block h-4 mt-2 mb-2">{error ?? ""}</span>
               <p className="text-md text-primary-200">
                 Don't have an account?
                 <a className="text-accent m-1" href="/auth/register">

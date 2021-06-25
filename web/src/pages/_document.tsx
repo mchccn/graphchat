@@ -1,6 +1,6 @@
 import Document, { Head, Html, Main, NextScript } from "next/document";
 
-class ReanvueDocument extends Document {
+class Page extends Document {
   render() {
     return (
       <Html>
@@ -14,4 +14,4 @@ class ReanvueDocument extends Document {
   }
 }
 
-export default ReanvueDocument;
+export default Page;
