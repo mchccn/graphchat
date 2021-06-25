@@ -11,9 +11,10 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="w-full grid place-items-center">
+    <div className="w-full h-full grid place-items-center text-center">
       {data.me ? (
         <div>
+          <h1>{data.me.username}</h1>
           <a
             className="text-lg"
             href=""
