@@ -6,6 +6,7 @@ import {
 } from "@apollo/client";
 import type { AppProps } from "next/app";
 import "../styles/style.css";
+import { Navbar } from "../components/Navbar";
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
@@ -18,6 +19,7 @@ const client = new ApolloClient({
 const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ApolloProvider client={client}>
+      <Navbar />
       <Component {...pageProps} />
     </ApolloProvider>
   );

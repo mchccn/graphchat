@@ -10,38 +10,26 @@ const Index = () => {
     console.log(data.me);
   }, []);
 
-  if (!data.me)
-    return (
-      <div>
-        <a className="text-lg" href="/auth/login">
-          Click to sign in
-        </a>
-      </div>
-    );
-
   return (
-    <div className="h-full w-full grid place-items-center">
-      <h1 className="text-primary-100">Reanvue</h1>
-      <div>
+    <div className="w-full grid place-items-center">
+      {data.me ? (
         <div>
-          <h2>Logged in as {data.me.username}</h2>
+          <a
+            className="text-lg"
+            href=""
+            onClick={async (e) => {
+              e.preventDefault();
+              const data = await logout();
+              console.log(data);
+              return location.reload();
+            }}
+          >
+            Click to logout
+          </a>
         </div>
-        <a
-          className="text-lg"
-          href=""
-          onClick={async (e) => {
-            e.preventDefault();
-
-            const data = await logout();
-
-            console.log(data);
-
-            return location.reload();
-          }}
-        >
-          Click to logout
-        </a>
-      </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };
