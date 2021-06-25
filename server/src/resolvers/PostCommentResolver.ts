@@ -102,6 +102,8 @@ export class PostCommentResolver {
         post: await Post.findOne(id),
         content,
         postId: id,
+        parent,
+        parentId: parent.id,
       }).save();
 
       return { comment };
@@ -162,6 +164,30 @@ export class PostCommentResolver {
 
       if (comment.authorId !== req.session.user)
         return wrapErrors(queryError(403, "forbidden"));
+
+      const comments = await (async function traverse(
+        comments
+      ): Promise<PostComment[]> {
+        const subcomments = (
+          await Promise.all(
+            comments.map(async (comment) =>
+              traverse(
+                await PostComment.find({ where: { parentId: comment.id } })
+              )
+            )
+          )
+        ).flat(9007199254740991);
+
+        return [...subcomments, ...comments];
+      })(
+        await PostComment.find({
+          where: {
+            parentId: id,
+          },
+        })
+      );
+
+      await Promise.all(comments.map((comment) => PostComment.delete(comment)));
 
       await PostComment.delete(comment);
 
