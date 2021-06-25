@@ -53,6 +53,7 @@ type Mutation {
   logout: Boolean!
   post(content: String!, title: String!): PostResponse!
   postComment(content: String!, id: String!): PostCommentResponse!
+  postReplyComment(content: String!, id: String!): PostCommentResponse!
   register(input: UsernamePasswordEmailInput!): UserResponse!
   removeFriend(id: String!): UserFriendResponse!
   sendDM(message: String!, receiver: String!): DirectMessageResponse!

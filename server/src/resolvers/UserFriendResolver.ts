@@ -96,7 +96,7 @@ export class UserFriendResolver {
     @Ctx() { req }: Context
   ): Promise<UserFriendResponse> {
     try {
-      const request = await UserFriendRequest.findOne({ id });
+      const request = await UserFriendRequest.findOne(id);
 
       if (!request)
         return wrapErrors(queryError(400, "friend request doesn't exist"));
@@ -140,7 +140,7 @@ export class UserFriendResolver {
     @Ctx() { req }: Context
   ): Promise<UserFriendRequestResponse> {
     try {
-      const request = await UserFriendRequest.findOne({ id });
+      const request = await UserFriendRequest.findOne(id);
 
       if (!request)
         return wrapErrors(queryError(400, "friend request doesn't exist"));

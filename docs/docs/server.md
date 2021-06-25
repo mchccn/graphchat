@@ -21,6 +21,7 @@ It uses PostgreSQL as its database and is built with Apollo Server with Type-Gra
 - [Utilities](#utilities)
 - [GraphQL](#graphql)
   - [Apollo Server](#apollo-server)
+  - [Guards](#guards)
   - [Resolvers](#resolvers)
 
 ## Directories
@@ -117,6 +118,8 @@ In `src/utils/`, there are a few utility functions that are reused a lot.
   - `hex` – Generates a random hex string with the provided length.
 - `logging.ts` – Where all the logging happens.
   - `logger` – Logger object.
+- `RateLimiter.ts` – Ratelimiting utilities.
+  - `RateLimiter` – Ratelimiter class.
 - `slugs.ts` – URL slug generation.
   - `toSlug` – Transforms provided string into a useable slug.
 - `users.ts` – User I/O utility.
@@ -131,6 +134,15 @@ In `src/utils/`, there are a few utility functions that are reused a lot.
 
 For GraphQL, Reanvue uses Apollo Server with uploads disabled and credentials enabled.
 Uploads are disabled since Reanvue uses GraphQL Upload to implement user avatar uploading functionality.
+
+### Guards
+
+There are a few guards/middleware currently used.
+
+- `AdminPerms` – Only users with permissions can use this endpoint.
+- `CheckBans` – Check bans on the currently authenticated user and stop non-authorized users.
+- `CheckBansIfAuthed` – Check bans on the currently authenticated user.
+- `RateLimit` – Add a ratelimit.
 
 ### Resolvers
 

@@ -64,12 +64,22 @@ export class PostResolver {
           queryError(400, "content length must be no more than 250")
         );
 
+      const slug = await (async function find(
+        slug,
+        count = 0
+      ): Promise<string> {
+        if (await Post.findOne({ where: { slug } }))
+          return find(slug + count, count++);
+
+        return slug;
+      })(toSlug(title));
+
       const post = await Post.create({
         author: await User.findOne(req.session.user),
         authorId: req.session.user,
         content,
         title,
-        slug: toSlug(title),
+        slug,
       }).save();
 
       return { post };
@@ -88,7 +98,7 @@ export class PostResolver {
     @Ctx() { req }: Context
   ): Promise<PostResponse> {
     try {
-      const post = await Post.findOne({ id });
+      const post = await Post.findOne(id);
 
       if (!post) return wrapErrors(queryError(400, "post doesn't exist"));
 
@@ -144,7 +154,7 @@ export class PostResolver {
     @Ctx() { req }: Context
   ): Promise<PostResponse> {
     try {
-      const post = await Post.findOne({ id });
+      const post = await Post.findOne(id);
 
       if (!post) return wrapErrors(queryError(400, "post doesn't exist"));
 
@@ -165,7 +175,7 @@ export class PostResolver {
   @UseMiddleware(CheckBans)
   async getPost(@Arg("id") id: string): Promise<PostResponse> {
     try {
-      const post = await Post.findOne({ id });
+      const post = await Post.findOne(id);
 
       return { post };
     } catch (e) {

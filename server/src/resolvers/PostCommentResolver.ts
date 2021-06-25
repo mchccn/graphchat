@@ -46,9 +46,47 @@ export class PostCommentResolver {
     try {
       content = content.trim();
 
-      const post = await Post.findOne({ id });
+      const post = await Post.findOne(id);
 
       if (!post) return wrapErrors(queryError(400, "post doesn't exist"));
+
+      if (content.length < 5)
+        return wrapErrors(queryError(400, "content length must be at least 5"));
+
+      if (content.length > 200)
+        return wrapErrors(
+          queryError(400, "content length must be no more than 200")
+        );
+
+      const comment = await PostComment.create({
+        authorId: req.session.user,
+        author: await User.findOne(req.session.user),
+        post: await Post.findOne(id),
+        content,
+        postId: id,
+      }).save();
+
+      return { comment };
+    } catch (e) {
+      console.error(e);
+
+      return wrapErrors(queryError(500, "internal server error"));
+    }
+  }
+
+  @Mutation(() => PostCommentResponse)
+  @UseMiddleware(CheckBans)
+  async postReplyComment(
+    @Arg("id") id: string,
+    @Arg("content") content: string,
+    @Ctx() { req }: Context
+  ): Promise<PostCommentResponse> {
+    try {
+      content = content.trim();
+
+      const parent = await PostComment.findOne(id);
+
+      if (!parent) return wrapErrors(queryError(400, "comment doesn't exist"));
 
       if (content.length < 5)
         return wrapErrors(queryError(400, "content length must be at least 5"));
@@ -84,7 +122,7 @@ export class PostCommentResolver {
     try {
       content = content.trim();
 
-      const comment = await PostComment.findOne({ id });
+      const comment = await PostComment.findOne(id);
 
       if (!comment) return wrapErrors(queryError(400, "comment doesn't exist"));
 
@@ -118,7 +156,7 @@ export class PostCommentResolver {
     @Ctx() { req }: Context
   ): Promise<PostCommentResponse> {
     try {
-      const comment = await PostComment.findOne({ id });
+      const comment = await PostComment.findOne(id);
 
       if (!comment) return wrapErrors(queryError(400, "comment doesn't exist"));
 
@@ -139,7 +177,7 @@ export class PostCommentResolver {
   @UseMiddleware(CheckBans)
   async getPostComment(@Arg("id") id: string): Promise<PostCommentResponse> {
     try {
-      const comment = await PostComment.findOne({ id });
+      const comment = await PostComment.findOne(id);
 
       return { comment };
     } catch (e) {

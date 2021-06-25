@@ -14,7 +14,7 @@ import logger from "../utils/logging";
 import root from "./routes/root";
 import ws from "./ws";
 
-const client = new RedisClient(
+export const client = new RedisClient(
   parseInt(process.env.REDIS_PORT!),
   process.env.REDIS_HOST!
 )

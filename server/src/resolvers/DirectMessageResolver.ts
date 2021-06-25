@@ -103,7 +103,7 @@ export class DirectMessageResolver {
     try {
       const sender = (await User.findOne(req.session.user))!;
 
-      const message = await DirectMessage.findOne({ id });
+      const message = await DirectMessage.findOne(id);
 
       if (!message) return wrapErrors(queryError(400, "message doesn't exist"));
 
@@ -162,7 +162,7 @@ export class DirectMessageResolver {
     try {
       const sender = (await User.findOne(req.session.user))!;
 
-      const message = await DirectMessage.findOne({ id });
+      const message = await DirectMessage.findOne(id);
 
       if (!message) return wrapErrors(queryError(400, "message doesn't exist"));
 
