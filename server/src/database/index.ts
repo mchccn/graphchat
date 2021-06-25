@@ -2,7 +2,6 @@ import "dotenv/config";
 import "reflect-metadata";
 import { Article } from "src/entities/Article";
 import { ArticleComment } from "src/entities/ArticleComment";
-import { UserFollow } from "src/entities/UserFollow";
 import { UserFriend } from "src/entities/UserFriend";
 import { UserFriendRequest } from "src/entities/UserFriendRequest";
 import { createConnection } from "typeorm";
@@ -23,7 +22,6 @@ export default async () => {
       User,
       UserBan,
       UserBlock,
-      UserFollow,
       UserFriend,
       UserFriendRequest,
       DirectMessage,

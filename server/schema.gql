@@ -47,7 +47,6 @@ type Mutation {
   editPost(data: UpdatePostInput!, id: String!): PostResponse!
   editPostComment(content: String!, id: String!): PostCommentResponse!
   fetchFriends: UserFriendsResponse!
-  follow(id: String!): UserFollowResponse!
   ignoreFriend(id: Float!): UserFriendRequestResponse!
   login(input: UsernamePasswordInput!): UserResponse!
   logout: Boolean!
@@ -59,7 +58,6 @@ type Mutation {
   sendDM(message: String!, receiver: String!): DirectMessageResponse!
   unban(id: String!): UserBansResponse!
   unblock(id: String!): UserBlocksResponse!
-  unfollow(id: String!): UserFollowResponse!
   updateUser(data: UpdateUserInput!): UserResponse
 }
 
@@ -99,8 +97,6 @@ type PostResponse {
 type Query {
   fetchBans(id: String!): UserBansResponse!
   fetchBlocks(id: String!): UserBlocksResponse!
-  fetchFollowed: UsersResponse!
-  fetchFollowers: UsersResponse!
   getDMs(limit: Float, offset: Float, sender: String!): DirectMessagesResponse!
   getPost(id: String!): PostResponse
   getPostComment(id: String!): PostCommentResponse
@@ -181,17 +177,6 @@ type UserBlocksResponse {
   errors: [QueryError!]
 }
 
-type UserFollow {
-  followed: User!
-  id: Int!
-  user: User!
-}
-
-type UserFollowResponse {
-  errors: [QueryError!]
-  follow: UserFollow
-}
-
 type UserFriend {
   friended: User!
   id: Int!
@@ -241,9 +226,4 @@ input UsernamePasswordEmailInput {
 input UsernamePasswordInput {
   password: String!
   username: String!
-}
-
-type UsersResponse {
-  errors: [QueryError!]
-  users: [User!]
 }

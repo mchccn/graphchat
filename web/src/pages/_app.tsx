@@ -1,19 +1,33 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
-} from "@apollo/client";
+import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, split } from "@apollo/client";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 import type { AppProps } from "next/app";
-import "../styles/style.css";
 
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: `${process.env.NEXT_PUBLIC_SERVER_ADDRESS}/graphql`,
-    credentials: "include",
-  }),
+const http = new HttpLink({
+  uri: `${process.env.NEXT_PUBLIC_SERVER_ADDRESS}/graphql`,
+  credentials: "include",
 });
+
+const ws = new WebSocketLink({
+  uri: `${process.env.NEXT_PUBLIC_WSS_ADDRESS}/subscriptions`,
+  options: {
+    reconnect: true,
+  },
+});
+
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+
+    return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+  },
+  ws,
+  http
+);
+
+const cache = new InMemoryCache();
+
+const client = new ApolloClient({ cache, link });
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (

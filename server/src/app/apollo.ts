@@ -6,7 +6,6 @@ import { AssetResolver } from "src/resolvers/AssetResolver";
 import { PostCommentResolver } from "src/resolvers/PostCommentResolver";
 import { PostResolver } from "src/resolvers/PostResolver";
 import { UserBlockResolver } from "src/resolvers/UserBlockResolver";
-import { UserFollowResolver } from "src/resolvers/UserFollowResolver";
 import { UserFriendResolver } from "src/resolvers/UserFriendResolver";
 import { buildSchema } from "type-graphql";
 import { DirectMessageResolver } from "../resolvers/DirectMessageResolver";
@@ -20,7 +19,6 @@ export default async () =>
         UserResolver,
         UserBanResolver,
         UserBlockResolver,
-        UserFollowResolver,
         UserFriendResolver,
         DirectMessageResolver,
         PostResolver,
@@ -33,4 +31,5 @@ export default async () =>
     context: (ctx) => ctx,
     uploads: false,
     playground: !__prod__,
+    subscriptions: { path: "/subscriptions" },
   });
