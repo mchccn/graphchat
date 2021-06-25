@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1,
+h2,
+h3,
+h4,
+p.bold {
+  font-weight: 700;
+}
+
+:root {
+  color: var(--color-primary-100);
+
+  --color-primary-100: #dee3ea;
+  --color-primary-200: #b2bdcd;
+  --color-primary-300: #99a2af;
+  --color-primary-400: #8e96a1;
+  --color-primary-500: #78808a;
+  --color-primary-600: #323d4d;
+  --color-primary-700: #242c37;
+  --color-primary-800: #0f1318;
+  --color-primary-900: #0b0e11;
+  --color-accent-glow: #c40d8a;
+  --color-accent: #e00198;
+  --color-accent-hover: #ff00ae;
+
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
+h1 {
+  font-size: 4rem;
+}
+
+h2 {
+  font-size: 2.8rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+h4 {
+  font-size: 1.4rem;
+}
+
+p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-700) rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar {
+  overflow: overlay;
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  display: initial;
+}
+
+html,
+body,
+#__next {
+  background-color: var(--color-primary-900);
+  height: 100%;
+  width: 100%;
+}
+
+img {
+  @apply select-none;
+}
+
+@keyframes move-background {
+  0% {
+    background-position: 0;
+  }
+  100% {
+    background-position: 100000%;
+  }
+}
