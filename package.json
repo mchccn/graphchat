@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "server",
-    "web"
+    "web",
+    "docs"
   ],
   "scripts": {
     "build:server": "concurrently \"yarn workspace server run build\"",
@@ -12,7 +13,10 @@
     "clean:logs:server": "concurrently \"yarn workspace server run clean:logs\"",
     "build:web": "concurrently \"yarn workspace web run build\"",
     "dev:web": "concurrently \"yarn workspace web run dev\"",
-    "start:web": "concurrently \"yarn workspace web run start\""
+    "start:web": "concurrently \"yarn workspace web run start\"",
+    "build:docs": "concurrently \"yarn workspace docs run build\"",
+    "dev:docs": "concurrently \"yarn workspace docs run dev\"",
+    "start:docs": "concurrently \"yarn workspace docs run start\""
   },
   "dependencies": {
     "concurrently": "^6.2.0"

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useRegisterMutation } from "../../generated/graphql";
+import capitalizeFirstLetter from "../../utils/capitalize";
 
 const Register = () => {
   const [register] = useRegisterMutation();
@@ -12,7 +13,7 @@ const Register = () => {
   const router = useRouter();
 
   return (
-    <div className="grid place-items-center w-full h-full">
+    <div className="grid place-items-center text-center w-full h-full">
       <div className="flex m-auto flex-col px-6 pt-6 pb-4 gap-5 bg-primary-800 sm:rounded-8 z-10 sm:w-400 w-full">
         <span className="text-3xl text-primary-100 font-bold text-center">
           Welcome to Reanvue
@@ -106,12 +107,14 @@ const Register = () => {
                 Register
               </Button>
               <span className="text-red-500 block h-4 mt-2 mb-1">
-                {error || serverError || ""}
+                {capitalizeFirstLetter(error) ||
+                  capitalizeFirstLetter(serverError) ||
+                  ""}
               </span>
-              <p className="text-sm text-primary-200">
-                Already have an account?{" "}
-                <a className="text-accent" href="/auth/login">
-                  Log in!
+              <p className="text-md text-primary-200">
+                Already have an account?
+                <a className="text-accent m-1" href="/auth/login">
+                  Log in
                 </a>
               </p>
             </Form>

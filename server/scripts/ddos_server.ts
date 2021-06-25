@@ -4,7 +4,7 @@ import { join } from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-const { threads, requests, seconds, command } = (yargs(hideBin(process.argv))
+const { threads, requests, seconds, command } = yargs(hideBin(process.argv))
   .help()
   .option("threads", {
     alias: "t",
@@ -29,7 +29,7 @@ const { threads, requests, seconds, command } = (yargs(hideBin(process.argv))
     type: "string",
     description: "command to execute",
     default: `curl -X POST ${process.env.SERVER_ADDRESS}/graphql --data '{ "query": "{ me { id } }" }' -H "Content-Type: application/json"`,
-  }).argv as unknown) as {
+  }).argv as unknown as {
   threads: number;
   requests: number;
   seconds: number;
